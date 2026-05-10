@@ -3,63 +3,67 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Aluno;
+use App\Models\Turma;
+use App\Models\Empresa;
 use Illuminate\Http\Request;
 
 class AlunoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $alunos = Aluno::with(['turma', 'empresa'])->orderBy('nome')->paginate(10);
+        return view('admin.alunos.index', compact('alunos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $turmas   = Turma::orderBy('nome')->get();
+        $empresas = Empresa::orderBy('nome')->get();
+        return view('admin.alunos.create', compact('turmas', 'empresas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nome'       => 'required|string|max:255',
+            'matricula'  => 'required|string|unique:alunos',
+            'turma_id'   => 'required|exists:turmas,id',
+            'empresa_id' => 'nullable|exists:empresas,id',
+        ]);
+
+        Aluno::create($request->only('nome', 'matricula', 'turma_id', 'empresa_id'));
+
+        return redirect()->route('admin.alunos.index')
+                         ->with('success', 'Aluno cadastrado com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Aluno $aluno)
     {
-        //
+        $turmas   = Turma::orderBy('nome')->get();
+        $empresas = Empresa::orderBy('nome')->get();
+        return view('admin.alunos.edit', compact('aluno', 'turmas', 'empresas'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Aluno $aluno)
     {
-        //
+        $request->validate([
+            'nome'       => 'required|string|max:255',
+            'matricula'  => 'required|string|unique:alunos,matricula,' . $aluno->id,
+            'turma_id'   => 'required|exists:turmas,id',
+            'empresa_id' => 'nullable|exists:empresas,id',
+        ]);
+
+        $aluno->update($request->only('nome', 'matricula', 'turma_id', 'empresa_id'));
+
+        return redirect()->route('admin.alunos.index')
+                         ->with('success', 'Aluno atualizado!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Aluno $aluno)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $aluno->delete();
+        return redirect()->route('admin.alunos.index')
+                         ->with('success', 'Aluno removido!');
     }
 }

@@ -8,17 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('empresas', function (Blueprint $table) {
+        Schema::create('professor_turma', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
-            $table->string('cnpj')->unique();
-            $table->string('responsavel');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('turma_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('empresas');
+        Schema::dropIfExists('professor_turma');
     }
 };

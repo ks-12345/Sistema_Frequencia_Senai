@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('alunos', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+Schema::create('alunos', function (Blueprint $table) {
+    $table->id();
+    $table->string('nome');
+    $table->string('matricula')->unique();
+    $table->foreignId('turma_id')->constrained();
+    $table->foreignId('empresa_id')->nullable()->constrained();
+    $table->timestamps();
+});
     }
 
     /**

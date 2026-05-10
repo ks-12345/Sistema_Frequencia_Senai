@@ -8,13 +8,15 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
-    public function run(): void
-    {
-        User::create([
+   public function run(): void
+{
+    User::firstOrCreate(
+        ['email' => 'admin@senai.com'],
+        [
             'name'     => 'Administrador',
-            'email'    => 'admin@senai.com',
             'password' => Hash::make('password'),
             'role'     => 'admin',
-        ]);
-    }
+        ]
+    );
+}
 }

@@ -3,63 +3,73 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class ProfessorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $professores = User::where('role', 'professor')
+                          ->where('is_substituto', false)
+                          ->orderBy('name')
+                          ->paginate(10);
+        return view('admin.professores.index', compact('professores'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.professores.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|string|min:6',
+        ]);
+
+        User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => 'professor',
+        ]);
+
+        return redirect()->route('admin.professores.index')
+                         ->with('success', 'Professor cadastrado com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(User $professore)
     {
-        //
+        return view('admin.professores.edit', compact('professore'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, User $professore)
     {
-        //
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $professore->id,
+        ]);
+
+        $data = $request->only('name', 'email');
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $professore->update($data);
+
+        return redirect()->route('admin.professores.index')
+                         ->with('success', 'Professor atualizado!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(User $professore)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $professore->delete();
+        return redirect()->route('admin.professores.index')
+                         ->with('success', 'Professor removido!');
     }
 }
