@@ -41,11 +41,13 @@
                 @if(!$turma->isFinalizada())
                     <a href="{{ route('admin.turmas.edit', $turma) }}">Editar</a>
 
+
                     <form method="POST" action="{{ route('admin.turmas.finalizar', $turma) }}" style="display:inline">
                         @csrf @method('PATCH')
                         <button onclick="return confirm('Finalizar a turma {{ $turma->nome }}? Isso bloqueará edições.')">
                             Finalizar
                         </button>
+                        
                     </form>
 
                     <form method="POST" action="{{ route('admin.turmas.destroy', $turma) }}" style="display:inline">
@@ -56,6 +58,7 @@
                     <form method="POST" action="{{ route('admin.turmas.reativar', $turma) }}" style="display:inline">
                         @csrf @method('PATCH')
                         <button>Reativar</button>
+                    <a href="{{ route('admin.certificados.index', $turma) }}">Certificados</a>
                     </form>
                 @endif
             </td>

@@ -28,23 +28,6 @@ class FrequenciaController extends Controller
         $turmas = $this->getTurmasDoUsuario();
         return view('professor.frequencia.index', compact('turmas'));
     }
-
-    public function lancar(Turma $turma)
-    {
-        $user   = Auth::user();
-        $turmas = $this->getTurmasDoUsuario();
-
-        // Garante que só acessa turmas permitidas
-        if (!$turmas->contains('id', $turma->id)) {
-            abort(403);
-        }
-
-        $alunos = $turma->alunos;
-        $data   = today()->toDateString();
-
-        return view('professor.frequencia.lancar', compact('turma', 'alunos','data'));
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -120,10 +103,9 @@ class FrequenciaController extends Controller
         abort(403);
     }
 
-    // Bloqueia se turma finalizada
     if ($turma->isFinalizada()) {
         return redirect()->route('professor.frequencia.index')
-                         ->with('error', 'Esta turma está finalizada. Não é possível lançar frequência.');
+                         ->with('error', 'Esta turma está finalizada.');
     }
 
     $alunos = $turma->alunos;

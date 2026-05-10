@@ -8,6 +8,8 @@
     <nav>
         <a href="{{ route('professor.frequencia.index') }}">Lançar Frequência</a> |
         <a href="{{ route('professor.frequencia.pendentes') }}">Pendentes de Aprovação</a>
+        <a href="{{ route('professor.saidas.index') }}">Saídas Antecipadas</a>
+        <a href="{{ route('professor.diario.index') }}">Diário de Classe</a> |
     </nav>
 
     <form method="POST" action="{{ route('logout') }}">

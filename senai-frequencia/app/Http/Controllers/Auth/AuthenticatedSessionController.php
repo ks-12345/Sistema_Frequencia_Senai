@@ -24,15 +24,16 @@ class AuthenticatedSessionController extends Controller
         return redirect()->intended($this->redirectByRole());
     }
 
-    private function redirectByRole(): string
-    {
-        return match(Auth::user()->role) {
-            'admin'     => route('admin.dashboard'),
-            'professor' => route('professor.dashboard'),
-            'empresa'   => route('empresa.dashboard'),
-            default     => '/',
-        };
-    }
+private function redirectByRole(): string
+{
+    return match(Auth::user()->role) {
+        'admin'      => route('admin.dashboard'),
+        'professor'  => route('professor.dashboard'),
+        'empresa'    => route('empresa.dashboard'),
+        'secretaria' => route('secretaria.saidas.index'),
+        default      => '/',
+    };
+}
 
     public function destroy(Request $request): RedirectResponse
     {

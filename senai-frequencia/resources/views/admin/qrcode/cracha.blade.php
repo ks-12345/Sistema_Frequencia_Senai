@@ -29,7 +29,9 @@
         <p><strong>Turma:</strong> {{ $aluno->turma->nome ?? '—' }}</p>
         <p><strong>Curso:</strong> {{ $aluno->turma->curso ?? '—' }}</p>
 
-        <img src="{{ route('admin.qrcode.imagem', $aluno) }}" width="200" height="200" alt="QR Code">
+<img src="{{ route('admin.qrcode.imagem', $aluno) }}" 
+     width="200" height="200" alt="QR Code"
+     style="border: 1px solid #ddd; border-radius: 8px;">
 
         <p style="font-size:11px;color:#999">{{ $aluno->qrcode_token }}</p>
 

@@ -16,14 +16,14 @@ class QrCodeController extends Controller
 
     // Retorna a imagem do QR Code
     public function imagem(Aluno $aluno)
-    {
-        $qrcode = QrCode::format('png')
-                        ->size(300)
-                        ->errorCorrection('H')
-                        ->generate($aluno->qrcode_token);
+{
+    $qrcode = QrCode::format('svg')
+                    ->size(300)
+                    ->errorCorrection('H')
+                    ->generate($aluno->qrcode_token);
 
-        return response($qrcode, 200)->header('Content-Type', 'image/png');
-    }
+    return response($qrcode, 200)->header('Content-Type', 'image/svg+xml');
+}
 
     // Simula leitura do QR Code
     public function lerQrCode(string $token)

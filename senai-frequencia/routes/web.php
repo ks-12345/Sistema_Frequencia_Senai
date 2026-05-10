@@ -29,6 +29,24 @@ Route::patch('turmas/{turma}/reativar', [\App\Http\Controllers\Admin\TurmaContro
 Route::get('alunos/{aluno}/cracha', [\App\Http\Controllers\Admin\QrCodeController::class, 'cracha'])->name('qrcode.cracha');
 Route::get('alunos/{aluno}/qrcode', [\App\Http\Controllers\Admin\QrCodeController::class, 'imagem'])->name('qrcode.imagem');
 Route::get('qrcode/ler/{token}', [\App\Http\Controllers\Admin\QrCodeController::class, 'lerQrCode'])->name('qrcode.ler');
+Route::get('turmas/{turma}/certificados', [\App\Http\Controllers\Admin\CertificadoController::class, 'index'])->name('certificados.index');
+Route::post('turmas/{turma}/certificados/gerar-todos', [\App\Http\Controllers\Admin\CertificadoController::class, 'gerarTodos'])->name('certificados.gerar-todos');
+Route::post('turmas/{turma}/alunos/{aluno}/certificado', [\App\Http\Controllers\Admin\CertificadoController::class, 'gerar'])->name('certificados.gerar');
+Route::get('certificados/{certificado}/download', [\App\Http\Controllers\Admin\CertificadoController::class, 'download'])->name('certificados.download');
+Route::get('acesso', [\App\Http\Controllers\Admin\AcessoController::class, 'index'])->name('acesso.index');
+Route::get('acesso/leitura', [\App\Http\Controllers\Admin\AcessoController::class, 'leitura'])->name('acesso.leitura');
+Route::post('acesso/registrar', [\App\Http\Controllers\Admin\AcessoController::class, 'registrar'])->name('acesso.registrar');
+Route::get('acesso/resultado/{registro}', [\App\Http\Controllers\Admin\AcessoController::class, 'resultado'])->name('acesso.resultado');
+Route::get('acesso/historico/{aluno}', [\App\Http\Controllers\Admin\AcessoController::class, 'historico'])->name('acesso.historico');
+Route::get('diario', [\App\Http\Controllers\Admin\DiarioAulaController::class, 'index'])->name('diario.index');
+Route::get('diario/{turma}', [\App\Http\Controllers\Admin\DiarioAulaController::class, 'turma'])->name('diario.turma');
+});
+
+// Rotas da Secretaria — novo grupo
+Route::middleware(['auth', 'role:secretaria,admin'])->prefix('secretaria')->name('secretaria.')->group(function () {
+    Route::get('saidas', [\App\Http\Controllers\Secretaria\SaidaAntecipadaController::class, 'index'])->name('saidas.index');
+    Route::patch('saidas/{saida}/autorizar', [\App\Http\Controllers\Secretaria\SaidaAntecipadaController::class, 'autorizar'])->name('saidas.autorizar');
+    Route::patch('saidas/{saida}/nao-autorizar', [\App\Http\Controllers\Secretaria\SaidaAntecipadaController::class, 'naoAutorizar'])->name('saidas.nao-autorizar');
 });
 
 
@@ -41,6 +59,16 @@ Route::middleware(['auth', 'role:professor'])->prefix('professor')->name('profes
     Route::get('/frequencia/pendentes', [\App\Http\Controllers\Professor\FrequenciaController::class, 'pendentes'])->name('frequencia.pendentes');
     Route::patch('/frequencia/{frequencia}/aprovar', [\App\Http\Controllers\Professor\FrequenciaController::class, 'aprovar'])->name('frequencia.aprovar');
     Route::patch('/frequencia/{frequencia}/rejeitar', [\App\Http\Controllers\Professor\FrequenciaController::class, 'rejeitar'])->name('frequencia.rejeitar');
+    Route::get('saidas', [\App\Http\Controllers\Professor\SaidaAntecipadaController::class, 'index'])->name('saidas.index');
+Route::get('saidas/registrar', [\App\Http\Controllers\Professor\SaidaAntecipadaController::class, 'create'])->name('saidas.create');
+Route::post('saidas', [\App\Http\Controllers\Professor\SaidaAntecipadaController::class, 'store'])->name('saidas.store');
+Route::get('/diario', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'index'])->name('diario.index');
+Route::get('/diario/{turma}', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'turma'])->name('diario.turma');
+Route::get('/diario/{turma}/nova', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'create'])->name('diario.create');
+Route::post('/diario/{turma}', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'store'])->name('diario.store');
+Route::get('/diario/{turma}/{aula}/editar', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'edit'])->name('diario.edit');
+Route::put('/diario/{turma}/{aula}', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'update'])->name('diario.update');
+Route::delete('/diario/{turma}/{aula}', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'destroy'])->name('diario.destroy');
 });
 
 // Rotas da Empresa
