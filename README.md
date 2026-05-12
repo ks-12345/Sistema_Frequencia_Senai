@@ -5,7 +5,6 @@ Sistema web para gerenciamento de frequência acadêmica focado em segurança, r
 
 ## 🛠 Tecnologias 
 - **Backend:** PHP (Laravel) 
-- **Frontend:** TailwindCSS
 - **Banco de Dados:** MySQL
 - **Segurança:** RBAC (Controle de Acesso Baseado em Perfis)
 
