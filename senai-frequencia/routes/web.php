@@ -74,6 +74,7 @@ Route::delete('/diario/{turma}/{aula}', [\App\Http\Controllers\Professor\DiarioA
 // Rotas da Empresa
 Route::middleware(['auth', 'role:empresa'])->prefix('empresa')->name('empresa.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Empresa\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/alunos', [\App\Http\Controllers\Empresa\AlunosController::class, 'index'])->name('alunos.index');
     Route::get('/frequencia', [\App\Http\Controllers\Empresa\FrequenciaController::class, 'index'])->name('frequencia.index');
     Route::get('/frequencia/{aluno}', [\App\Http\Controllers\Empresa\FrequenciaController::class, 'show'])->name('frequencia.show');
 });

@@ -118,6 +118,50 @@
 
                 </div>
 
+                <div class="border-t border-slate-100 pt-8">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <i class="ti ti-lock-access text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-[#0a1128]">Credenciais de Acesso</h3>
+                            <p class="text-slate-400 text-sm">Email e senha para o login da empresa</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 ml-1">Email da Empresa *</label>
+                            <div class="relative">
+                                <i class="ti ti-mail absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="email" name="email" value="{{ old('email') }}" required
+                                       placeholder="contato@empresa.com"
+                                       class="input-focus w-full bg-slate-100 border-2 border-transparent rounded-2xl pl-12 pr-5 py-3.5 text-slate-800 outline-none transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 ml-1">Senha de Acesso *</label>
+                            <div class="relative">
+                                <i class="ti ti-key absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="password" name="password" required
+                                       placeholder="Mínimo 8 caracteres"
+                                       class="input-focus w-full bg-slate-100 border-2 border-transparent rounded-2xl pl-12 pr-5 py-3.5 text-slate-800 outline-none transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-slate-700 ml-1">Confirmar Senha *</label>
+                            <div class="relative">
+                                <i class="ti ti-key absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="password" name="password_confirmation" required
+                                       placeholder="Confirme a senha"
+                                       class="input-focus w-full bg-slate-100 border-2 border-transparent rounded-2xl pl-12 pr-5 py-3.5 text-slate-800 outline-none transition-all">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="pt-8 border-t border-slate-100 flex items-center justify-end gap-4">
                     <button type="reset" class="px-6 py-3 rounded-xl font-bold text-slate-400 hover:text-slate-600 transition">
                         Limpar Dados
