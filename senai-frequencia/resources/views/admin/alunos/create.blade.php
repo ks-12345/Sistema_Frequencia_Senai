@@ -130,6 +130,46 @@
                         </div>
                     </div>
 
+                    <div class="flex flex-col gap-2 md:col-span-2">
+                        <label class="text-sm font-bold text-slate-700 ml-1">CPF *</label>
+                        <input type="text" name="cpf" value="{{ old('cpf') }}" required
+                               placeholder="000.000.000-00"
+                               class="input-focus bg-slate-100 border-2 border-transparent rounded-2xl px-5 py-3.5 font-mono text-slate-800 outline-none transition-all">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-bold text-slate-700 ml-1">Email do Aluno *</label>
+                        <input type="email" name="email" value="{{ old('email') }}" required
+                               placeholder="aluno@dominio.com"
+                               class="input-focus bg-slate-100 border-2 border-transparent rounded-2xl px-5 py-3.5 text-slate-800 outline-none transition-all">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-bold text-slate-700 ml-1">Senha de Acesso *</label>
+                        <input type="password" name="password" required
+                               placeholder="Mínimo 8 caracteres"
+                               class="input-focus bg-slate-100 border-2 border-transparent rounded-2xl px-5 py-3.5 text-slate-800 outline-none transition-all">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-bold text-slate-700 ml-1">Confirmar Senha *</label>
+                        <input type="password" name="password_confirmation" required
+                               placeholder="Confirme a senha"
+                               class="input-focus bg-slate-100 border-2 border-transparent rounded-2xl px-5 py-3.5 text-slate-800 outline-none transition-all">
+                    </div>
+
+                    <div class="flex flex-col gap-2 md:col-span-2">
+                        <label class="text-sm font-bold text-slate-700 ml-1">Data de Nascimento *</label>
+                        <input type="date" name="data_nascimento" value="{{ old('data_nascimento') }}" required
+                               class="input-focus bg-slate-100 border-2 border-transparent rounded-2xl px-5 py-3.5 text-slate-800 outline-none transition-all">
+                    </div>
+
+                    <div class="flex flex-col gap-2 md:col-span-2">
+                        <label class="text-sm font-bold text-slate-700 ml-1">Endereço *</label>
+                        <textarea name="endereco" required rows="3"
+                                  class="input-focus bg-slate-100 border-2 border-transparent rounded-2xl px-5 py-3.5 text-slate-800 outline-none transition-all">{{ old('endereco') }}</textarea>
+                    </div>
+
                 </div>
 
                 <div class="pt-8 border-t border-slate-100 flex items-center justify-end gap-4">

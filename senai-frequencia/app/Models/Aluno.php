@@ -4,10 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Models\User;
 
 class Aluno extends Model
 {
-    protected $fillable = ['nome', 'matricula', 'qrcode_token', 'turma_id', 'empresa_id'];
+    protected $fillable = [
+        'nome',
+        'matricula',
+        'cpf',
+        'email',
+        'data_nascimento',
+        'endereco',
+        'qrcode_token',
+        'turma_id',
+        'empresa_id',
+        'user_id',
+    ];
 
     protected static function booted(): void
     {
@@ -25,6 +37,11 @@ class Aluno extends Model
     public function empresa()
     {
         return $this->belongsTo(Empresa::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function frequencias()

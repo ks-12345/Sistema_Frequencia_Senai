@@ -79,5 +79,11 @@ Route::middleware(['auth', 'role:empresa'])->prefix('empresa')->name('empresa.')
     Route::get('/frequencia/{aluno}', [\App\Http\Controllers\Empresa\FrequenciaController::class, 'show'])->name('frequencia.show');
 });
 
+// Rotas do Aluno
+Route::middleware(['auth', 'role:aluno'])->prefix('aluno')->name('aluno.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Aluno\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/cracha', [\App\Http\Controllers\Aluno\QrCodeController::class, 'cracha'])->name('cracha');
+    Route::get('/qrcode', [\App\Http\Controllers\Aluno\QrCodeController::class, 'imagem'])->name('imagem');
+});
 
 require __DIR__.'/auth.php';

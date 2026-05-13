@@ -6,9 +6,7 @@
     <title>Meus Aprendizes – SENAI</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -38,14 +36,21 @@
             </a>
         </nav>
 
-        <div class="p-6 border-t border-white/5">
+        <div class="p-6 border-t border-white/5 space-y-4">
+            <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                @csrf
+                <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-red-600 hover:border-red-600 transition-all">
+                    <i class="ti ti-power text-base"></i> Sair do Sistema
+                </button>
+            </form>
+
             <div class="bg-white/5 rounded-2xl p-4 flex items-center gap-3 border border-white/5">
                 <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold shadow-lg">
-                    {{ substr(Auth::user()->name, 0, 1) }}
+                    {{ substr(Auth::user()->name ?? 'U', 0, 1) }}
                 </div>
-                <div class="truncate">
+                <div class="truncate text-left">
                     <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Usuário</p>
-                    <p class="text-xs font-bold text-white truncate">{{ Auth::user()->name }}</p>
+                    <p class="text-xs font-bold text-white truncate">{{ Auth::user()->name ?? 'Usuário' }}</p>
                 </div>
             </div>
         </div>
@@ -111,7 +116,15 @@
                                 </div>
                             </td>
                             <td class="px-6 py-6">
-                                <span class="text-sm font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded-md">{{ $aluno->cpf }}</span>
+                                @php
+                                    $soNumeros = preg_replace('/[^0-9]/', '', $aluno->cpf);
+                                    $cpfFormatado = (strlen($soNumeros) === 11) 
+                                        ? vsprintf('%s%s%s.%s%s%s.%s%s%s-%s%s', str_split($soNumeros)) 
+                                        : $aluno->cpf;
+                                @endphp
+                                <span class="text-sm font-mono text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+                                    {{ $cpfFormatado }}
+                                </span>
                             </td>
                             <td class="px-6 py-6">
                                 <div class="flex flex-col">
@@ -121,7 +134,7 @@
                             </td>
                             <td class="px-6 py-6 text-center">
                                 @php
-                                    $statusStyle = $aluno->status === 'ativo' 
+                                    $statusStyle = ($aluno->status === 'ativo' || $aluno->status === 'Ativo') 
                                         ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
                                         : 'bg-red-50 text-red-600 border-red-100';
                                 @endphp

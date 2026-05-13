@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Aluno;
+use App\Models\Turma;
 
 class User extends Authenticatable
 {
@@ -34,6 +36,11 @@ class User extends Authenticatable
     public function empresa()
     {
         return $this->belongsTo(\App\Models\Empresa::class);
+    }
+
+    public function aluno()
+    {
+        return $this->hasOne(Aluno::class);
     }
 
     public function isAdmin(): bool

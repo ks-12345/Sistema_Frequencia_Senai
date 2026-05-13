@@ -35,10 +35,6 @@
                 <i class="ti ti-book text-xl"></i>
                 <span class="font-medium">Meus Diários</span>
             </a>
-            <a href="#" class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-white/10 transition text-slate-300">
-                <i class="ti ti-calendar text-xl"></i>
-                <span class="font-medium">Horários</span>
-            </a>
         </nav>
     </aside>
 

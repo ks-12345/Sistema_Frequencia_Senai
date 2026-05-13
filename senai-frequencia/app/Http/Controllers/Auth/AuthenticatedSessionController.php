@@ -30,6 +30,7 @@ private function redirectByRole(): string
         'admin'      => route('admin.dashboard'),
         'professor'  => route('professor.dashboard'),
         'empresa'    => route('empresa.dashboard'),
+        'aluno'      => route('aluno.dashboard'),
         'secretaria' => route('secretaria.saidas.index'),
         default      => '/',
     };
