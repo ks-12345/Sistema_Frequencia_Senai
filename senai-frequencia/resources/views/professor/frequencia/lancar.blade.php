@@ -64,13 +64,12 @@
                         <input type="date" name="data" value="{{ $data }}" required
                                class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:border-blue-500 transition-all">
                     </div>
-                    <button type="submit" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3.5 rounded-2xl transition shadow-lg shadow-emerald-900/10 flex items-center justify-center gap-2">
+                    <button type="submit" name="acao" value="salvar" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3.5 rounded-2xl transition shadow-lg shadow-emerald-900/10 flex items-center justify-center gap-2">
                         <i class="ti ti-device-floppy text-xl"></i> Salvar Chamada
                     </button>
 
-                    {{-- Envio para Secretaria (bulk por turma/data) será adicionado após criação da rota/controller --}}
-                    <button type="button" disabled
-                            class="w-full sm:w-auto bg-slate-200 text-slate-500 font-bold px-8 py-3.5 rounded-2xl transition shadow-lg shadow-slate-200/20 flex items-center justify-center gap-2 opacity-60 cursor-not-allowed">
+                    <button type="submit" name="acao" value="enviar"
+                            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-2xl transition shadow-lg shadow-blue-900/10 flex items-center justify-center gap-2">
                         <i class="ti ti-send text-xl"></i> Enviar para Secretaria
                     </button>
                 </div>

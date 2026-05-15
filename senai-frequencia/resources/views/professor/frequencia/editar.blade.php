@@ -22,9 +22,12 @@
                     <h1 class="text-3xl font-black text-[#0a1128]">{{ $turma->nome }}</h1>
                     <p class="text-slate-500 mt-2">Data: {{ \Carbon\Carbon::parse($data)->format('d/m/Y') }}</p>
                 </div>
-                <div class="flex gap-3">
-                    <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-black flex items-center gap-2">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="submit" name="acao" value="salvar" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-black flex items-center gap-2">
                         <i class="ti ti-device-floppy"></i> Salvar alteracoes
+                    </button>
+                    <button type="submit" name="acao" value="enviar" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-black flex items-center gap-2">
+                        <i class="ti ti-send"></i> Enviar para Secretaria
                     </button>
                     <a href="{{ route('professor.frequencia.historico', $turma) }}" class="bg-white border border-slate-200 px-5 py-3 rounded-2xl font-bold text-slate-600">
                         Voltar

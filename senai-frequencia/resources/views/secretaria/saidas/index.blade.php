@@ -21,6 +21,10 @@
                 <i class="ti ti-door-exit text-xl"></i>
                 <span class="font-bold">Saidas Antecipadas</span>
             </a>
+            <a href="{{ route('secretaria.frequencias.index') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-xl bg-white text-slate-700 hover:bg-slate-50 transition">
+                <i class="ti ti-checklist text-xl"></i>
+                <span class="font-bold">Frequências</span>
+            </a>
         </nav>
         <div class="p-6 border-t border-white/5">
             <form method="POST" action="{{ route('logout') }}">

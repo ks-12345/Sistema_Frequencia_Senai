@@ -9,7 +9,7 @@ class Frequencia extends Model
     protected $fillable = [
         'aluno_id',
         'lancado_por_id',
-        'aprovado_por_id',
+        'aprovado_por',
         'data',
         'status_presenca',
         'status_aprovacao',
@@ -43,7 +43,7 @@ class Frequencia extends Model
 
     public function aprovadoPor()
     {
-        return $this->belongsTo(User::class, 'aprovado_por_id');
+        return $this->belongsTo(User::class, 'aprovado_por');
     }
 
     public function solicitacaoSaida()

@@ -83,8 +83,8 @@
                 <tbody class="divide-y divide-slate-50">
                     @foreach($alunos as $aluno)
                     @php 
-                        $total = $aluno->frequencias->count();
-                        $presencas = $aluno->frequencias->where('status_presenca', 'presente')->count();
+                        $total = $aluno->frequenciasAprovadas->count();
+                        $presencas = $aluno->frequenciasAprovadas->where('status_presenca', 'presente')->count();
                         $porcentagem = $total > 0 ? round(($presencas / $total) * 100) : 0;
                         $isWarning = $porcentagem < 75;
                     @endphp

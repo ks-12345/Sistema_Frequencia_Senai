@@ -14,7 +14,7 @@ class FrequenciaController extends Controller
 {
     public function index()
     {
-        $alunos = Aluno::with(['turma', 'frequencias'])
+        $alunos = Aluno::with(['turma', 'frequenciasAprovadas'])
             ->where('empresa_id', Auth::user()->empresa_id)
             ->orderBy('nome')
             ->get();

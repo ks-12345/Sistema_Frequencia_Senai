@@ -47,6 +47,15 @@ Route::middleware(['auth', 'role:secretaria,admin'])->prefix('secretaria')->name
     Route::get('saidas', [\App\Http\Controllers\Secretaria\SaidaAntecipadaController::class, 'index'])->name('saidas.index');
     Route::patch('saidas/{saida}/autorizar', [\App\Http\Controllers\Secretaria\SaidaAntecipadaController::class, 'autorizar'])->name('saidas.autorizar');
     Route::patch('saidas/{saida}/nao-autorizar', [\App\Http\Controllers\Secretaria\SaidaAntecipadaController::class, 'naoAutorizar'])->name('saidas.nao-autorizar');
+
+    Route::get('frequencias', [\App\Http\Controllers\Secretaria\FrequenciaController::class, 'index'])->name('frequencias.index');
+    Route::get('frequencias/{turma}', [\App\Http\Controllers\Secretaria\FrequenciaController::class, 'turma'])->name('frequencias.turma');
+    Route::get('frequencias/{turma}/{data}', [\App\Http\Controllers\Secretaria\FrequenciaController::class, 'detalhe'])->name('frequencias.detalhes');
+    Route::patch('frequencias/{turma}/{data}/aprovar', [\App\Http\Controllers\Secretaria\FrequenciaController::class, 'aprovarData'])->name('frequencias.aprovar.data');
+    Route::patch('frequencias/{turma}/{data}/rejeitar', [\App\Http\Controllers\Secretaria\FrequenciaController::class, 'rejeitarData'])->name('frequencias.rejeitar.data');
+
+    Route::patch('frequencias/{frequencia}/aprovar', [\App\Http\Controllers\Secretaria\FrequenciaController::class, 'aprovar'])->name('frequencias.aprovar');
+    Route::patch('frequencias/{frequencia}/rejeitar', [\App\Http\Controllers\Secretaria\FrequenciaController::class, 'rejeitar'])->name('frequencias.rejeitar');
 });
 
 

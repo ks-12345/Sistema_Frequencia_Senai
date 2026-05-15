@@ -42,12 +42,11 @@ class FrequenciaController extends Controller
     }
     public function store(RegistrarSaidaAntecipadaRequest $request)
     {
-        $user            = Auth::user();
-        // Fluxo Professor -> Secretaria -> Empresa (status novo)
-        $statusProfessor = $user->is_substituto ? 'pendente_aprovacao' : 'aprovado';
-        $turma           = Turma::with('alunos')->findOrFail($request->turma_id);
+        $user      = Auth::user();
+        $enviar    = $request->input('acao') === 'enviar';
+        $turma     = Turma::with('alunos')->findOrFail($request->turma_id);
 
-        $alunosIds       = $turma->alunos->pluck('id')->all();
+        $alunosIds = $turma->alunos->pluck('id')->all();
 
         foreach ($request->frequencias as $alunoId => $status) {
             if (!in_array((int) $alunoId, $alunosIds, true)) {
@@ -60,8 +59,6 @@ class FrequenciaController extends Controller
                     ->withErrors(['saida_antecipada' => 'Informe horario e motivo para todas as saidas antecipadas.']);
             }
 
-            // Se a frequência já está aguardando aprovação, não permite sobrescrever automaticamente.
-            // (O professor pode ajustar apenas antes de enviar para secretaria.)
             $frequenciaExistente = Frequencia::where('aluno_id', $alunoId)
                 ->whereDate('data', $request->data)
                 ->first();
@@ -70,21 +67,22 @@ class FrequenciaController extends Controller
                 continue;
             }
 
+            $statusFluxo = $enviar ? 'pendente_aprovacao' : 'rascunho';
+
             Frequencia::updateOrCreate(
                 [
                     'aluno_id' => $alunoId,
                     'data'     => $request->data,
                 ],
                 [
-                    'lancado_por_id'   => $user->id,
-                    'status_presenca'  => $status,
-                    // Fluxo Professor -> Secretaria -> Empresa (status novo)
-                    'status'            => $statusProfessor,
-                    'observacao'       => $request->observacoes[$alunoId] ?? null,
+                    'lancado_por_id'       => $user->id,
+                    'status_presenca'      => $status,
+                    'status'               => $statusFluxo,
+                    'status_aprovacao'     => 'pendente',
+                    'enviado_secretaria_em' => $enviar ? now() : null,
+                    'observacao'           => $request->observacoes[$alunoId] ?? null,
                 ]
             );
-
-
 
             if ($status === 'saida_antecipada') {
                 $solicitacao = SolicitacaoSaida::updateOrCreate(
@@ -95,7 +93,6 @@ class FrequenciaController extends Controller
                     [
                         'professor_id' => $user->id,
                         'turma_id' => $turma->id,
-                        // Frequência atual pode ser obtida novamente (bulk por data/turma será ajustado no próximo passo)
                         'frequencia_id' => Frequencia::where('aluno_id', $alunoId)
                             ->whereDate('data', $request->data)
                             ->value('id'),
@@ -119,8 +116,12 @@ class FrequenciaController extends Controller
             }
         }
 
+        $mensagem = $enviar
+            ? 'Frequência enviada para a Secretaria com sucesso!'
+            : 'Frequência salva como rascunho. Envie para a Secretaria quando estiver pronta.';
+
         return redirect()->route('professor.frequencia.index')
-                         ->with('success', 'Frequência lançada com sucesso!');
+                         ->with('success', $mensagem);
     }
 
     public function pendentes()
@@ -202,6 +203,8 @@ class FrequenciaController extends Controller
         $alunosIds = $turma->alunos()->pluck('id')->all();
         $user = Auth::user();
 
+        $enviar = $request->input('acao') === 'enviar';
+
         foreach ($request->frequencias as $alunoId => $status) {
             if (!in_array((int) $alunoId, $alunosIds, true)) {
                 continue;
@@ -220,22 +223,33 @@ class FrequenciaController extends Controller
                     'lancado_por_id' => $user->id,
                     'status_presenca' => $status,
                     'status_aprovacao' => $frequencia?->status_aprovacao ?? ($user->is_substituto ? 'pendente' : 'aprovado'),
-                    'aprovado_por_id' => $frequencia?->aprovado_por_id,
+                    'aprovado_por' => $frequencia?->aprovado_por,
                     'observacao' => $request->observacoes[$alunoId] ?? null,
                 ]
             );
         }
 
+        if ($enviar) {
+            Frequencia::whereHas('aluno', fn ($query) => $query->where('turma_id', $turma->id))
+                ->whereDate('data', $data)
+                ->whereIn('status', ['rascunho', 'devolvido_correcao'])
+                ->update([
+                    'status' => 'pendente_aprovacao',
+                    'status_aprovacao' => 'pendente',
+                    'enviado_secretaria_em' => now(),
+                ]);
+        }
+
         return redirect()
             ->route('professor.frequencia.historico', $turma)
-            ->with('success', 'Frequencia atualizada com sucesso!');
+            ->with('success', $enviar ? 'Frequência enviada para a Secretaria!' : 'Frequência atualizada com sucesso!');
     }
 
     public function aprovar(Frequencia $frequencia)
     {
         $frequencia->update([
             'status_aprovacao' => 'aprovado',
-            'aprovado_por_id'  => Auth::id(),
+            'aprovado_por'  => Auth::id(),
         ]);
 
         return back()->with('success', 'Frequência aprovada!');
@@ -245,7 +259,7 @@ class FrequenciaController extends Controller
     {
         $frequencia->update([
             'status_aprovacao' => 'rejeitado',
-            'aprovado_por_id'  => Auth::id(),
+            'aprovado_por'  => Auth::id(),
         ]);
 
         return back()->with('success', 'Frequência rejeitada!');

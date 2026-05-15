@@ -53,6 +53,11 @@ class Aluno extends Model
         return $this->hasMany(Frequencia::class);
     }
 
+    public function frequenciasAprovadas()
+    {
+        return $this->hasMany(Frequencia::class)->where('status', 'aprovado');
+    }
+
     public function solicitacoesSaida()
     {
         return $this->hasMany(SolicitacaoSaida::class);
