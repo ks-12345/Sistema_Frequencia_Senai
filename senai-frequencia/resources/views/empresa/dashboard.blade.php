@@ -127,10 +127,7 @@
                     <p class="text-blue-100/80 leading-relaxed text-sm italic">
                         Os relatórios de frequência de Maio de 2026 estarão disponíveis para download definitivo a partir do dia 05 do próximo mês.
                     </p>
-                </div>
-                <button class="bg-white text-blue-900 font-black px-10 py-5 rounded-2xl hover:bg-blue-50 transition-all shadow-lg text-sm uppercase tracking-widest">
-                    Acessar Calendário
-                </button>
+</div>
             </div>
         </div>
 

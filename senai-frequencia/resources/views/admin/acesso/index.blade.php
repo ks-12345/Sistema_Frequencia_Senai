@@ -53,9 +53,6 @@
                     <i class="ti ti-arrow-left"></i> Voltar
                 </a>
 
-                <a href="{{ route('admin.acesso.leitura') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-blue-200 transition flex items-center gap-2">
-                    <i class="ti ti-qrcode"></i> Nova Leitura
-                </a>
             </div>
         </div>
 

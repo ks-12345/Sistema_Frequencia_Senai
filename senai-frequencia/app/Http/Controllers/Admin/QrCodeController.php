@@ -24,14 +24,4 @@ class QrCodeController extends Controller
 
     return response($qrcode, 200)->header('Content-Type', 'image/svg+xml');
 }
-
-    // Simula leitura do QR Code
-    public function lerQrCode(string $token)
-    {
-        $aluno = Aluno::where('qrcode_token', $token)
-                      ->with(['turma', 'empresa'])
-                      ->firstOrFail();
-
-        return view('admin.qrcode.leitura', compact('aluno'));
-    }
 }

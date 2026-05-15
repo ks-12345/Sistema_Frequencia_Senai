@@ -22,6 +22,11 @@ class Turma extends Model
         return $this->hasMany(Aluno::class);
     }
 
+    public function solicitacoesSaida()
+    {
+        return $this->hasMany(SolicitacaoSaida::class);
+    }
+
     public function substitutos()
     {
         return $this->belongsToMany(User::class, 'professor_turma');

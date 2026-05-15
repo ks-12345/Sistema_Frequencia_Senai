@@ -3,63 +3,107 @@
 namespace App\Http\Controllers\Secretaria;
 
 use App\Http\Controllers\Controller;
-use App\Models\SaidaAntecipada;
+use App\Http\Requests\AnalisarJustificativaRequest;
 use App\Models\Frequencia;
+use App\Models\HistoricoSolicitacaoSaida;
+use App\Models\SolicitacaoSaida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SaidaAntecipadaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pendentes = SaidaAntecipada::with(['aluno.turma', 'solicitadoPor'])
-            ->where('status', 'pendente')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $status = $request->status;
 
-        $historico = SaidaAntecipada::with(['aluno.turma', 'solicitadoPor', 'validadoPor'])
-            ->whereIn('status', ['autorizada', 'nao_autorizada'])
-            ->orderBy('validado_em', 'desc')
-            ->paginate(10);
+        $query = SolicitacaoSaida::with(['aluno.turma', 'professor', 'justificativas', 'analisadoPor'])
+            ->when($status, fn ($q) => $q->where('status', $status))
+            ->orderByRaw("FIELD(status, 'pendente', 'em_analise', 'recusado', 'falta_mantida', 'justificado', 'aprovado')")
+            ->orderBy('created_at', 'desc');
 
-        return view('secretaria.saidas.index', compact('pendentes', 'historico'));
+        $solicitacoes = $query->paginate(12)->withQueryString();
+
+        $resumo = [
+            'pendente' => SolicitacaoSaida::where('status', 'pendente')->count(),
+            'em_analise' => SolicitacaoSaida::where('status', 'em_analise')->count(),
+            'justificado' => SolicitacaoSaida::whereIn('status', ['justificado', 'aprovado'])->count(),
+            'falta_mantida' => SolicitacaoSaida::whereIn('status', ['recusado', 'falta_mantida'])->count(),
+        ];
+
+        return view('secretaria.saidas.index', compact('solicitacoes', 'resumo', 'status'));
     }
 
-    public function autorizar(Request $request, SaidaAntecipada $saida)
+    public function autorizar(AnalisarJustificativaRequest $request, SolicitacaoSaida $saida)
     {
-        $request->validate([
-            'observacao_secretaria' => 'nullable|string|max:500',
-        ]);
+        $this->aprovarSolicitacao($saida, $request->observacao);
 
-        $saida->update([
-            'status'                => 'autorizada',
-            'validado_por_id'       => Auth::id(),
-            'observacao_secretaria' => $request->observacao_secretaria,
-            'validado_em'           => now(),
-        ]);
-
-        // Atualiza frequência do aluno para atraso
-        Frequencia::where('aluno_id', $saida->aluno_id)
-            ->whereDate('data', $saida->horario_saida->toDateString())
-            ->where('status_aprovacao', 'aprovado')
-            ->update(['status_presenca' => 'atraso', 'observacao' => 'Saída antecipada autorizada']);
-
-        return back()->with('success', 'Saída autorizada e frequência atualizada!');
+        return back()->with('success', 'Justificativa aprovada, saida liberada e frequencia atualizada.');
     }
 
-    public function naoAutorizar(Request $request, SaidaAntecipada $saida)
+    public function naoAutorizar(AnalisarJustificativaRequest $request, SolicitacaoSaida $saida)
     {
-        $request->validate([
-            'observacao_secretaria' => 'nullable|string|max:500',
-        ]);
+        $this->recusarSolicitacao($saida, $request->observacao);
 
+        return back()->with('success', 'Justificativa recusada e falta mantida.');
+    }
+
+    private function aprovarSolicitacao(SolicitacaoSaida $saida, ?string $observacao): void
+    {
         $saida->update([
-            'status'                => 'nao_autorizada',
-            'validado_por_id'       => Auth::id(),
-            'observacao_secretaria' => $request->observacao_secretaria,
-            'validado_em'           => now(),
+            'status' => 'justificado',
+            'autorizado_saida' => true,
+            'analisado_por' => Auth::id(),
+            'data_analise' => now(),
         ]);
 
-        return back()->with('success', 'Saída não autorizada registrada.');
+        $saida->justificativas()->latest()->first()?->update([
+            'status' => 'aprovado',
+            'analisado_por' => Auth::id(),
+            'data_analise' => now(),
+        ]);
+
+        Frequencia::whereKey($saida->frequencia_id)
+            ->orWhere(fn ($q) => $q->where('aluno_id', $saida->aluno_id)->whereDate('data', $saida->data))
+            ->update([
+                'status_presenca' => 'saida_antecipada',
+                'observacao' => trim('Saida antecipada justificada. '.$observacao),
+            ]);
+
+        HistoricoSolicitacaoSaida::create([
+            'solicitacao_saida_id' => $saida->id,
+            'user_id' => Auth::id(),
+            'acao' => 'justificativa_aprovada',
+            'descricao' => $observacao,
+        ]);
+    }
+
+    private function recusarSolicitacao(SolicitacaoSaida $saida, ?string $observacao): void
+    {
+        $saida->update([
+            'status' => 'falta_mantida',
+            'autorizado_saida' => false,
+            'analisado_por' => Auth::id(),
+            'data_analise' => now(),
+        ]);
+
+        $saida->justificativas()->latest()->first()?->update([
+            'status' => 'recusado',
+            'analisado_por' => Auth::id(),
+            'data_analise' => now(),
+        ]);
+
+        Frequencia::whereKey($saida->frequencia_id)
+            ->orWhere(fn ($q) => $q->where('aluno_id', $saida->aluno_id)->whereDate('data', $saida->data))
+            ->update([
+                'status_presenca' => 'falta',
+                'observacao' => trim('Saida antecipada recusada. '.$observacao),
+            ]);
+
+        HistoricoSolicitacaoSaida::create([
+            'solicitacao_saida_id' => $saida->id,
+            'user_id' => Auth::id(),
+            'acao' => 'justificativa_recusada',
+            'descricao' => $observacao,
+        ]);
     }
 }

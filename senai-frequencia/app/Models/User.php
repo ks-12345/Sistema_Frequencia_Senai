@@ -58,6 +58,21 @@ class User extends Authenticatable
         return $this->role === 'empresa';
     }
 
+    public function isSecretaria(): bool
+    {
+        return $this->role === 'secretaria';
+    }
+
+    public function solicitacoesSaidaComoProfessor()
+    {
+        return $this->hasMany(SolicitacaoSaida::class, 'professor_id');
+    }
+
+    public function analisesSaida()
+    {
+        return $this->hasMany(SolicitacaoSaida::class, 'analisado_por');
+    }
+
     public function turmas()
 {
     return $this->belongsToMany(Turma::class, 'professor_turma');

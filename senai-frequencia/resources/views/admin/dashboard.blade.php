@@ -83,20 +83,20 @@
             </a>
         </nav>
 
-        <!-- Nova chamada -->
+        <!-- Acessos -->
         <div class="px-3 py-3 border-t border-white/10">
-            <a href="{{ route('admin.acesso.leitura') }}"
+            <a href="{{ route('admin.acesso.index') }}"
                class="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                Nova Chamada
+                Ver Acessos
             </a>
         </div>
 
         <!-- Rodapé sidebar -->
         <div class="px-3 py-3 space-y-1">
-            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-blue-300 hover:text-white text-xs transition-colors">
+            <a href="{{ route('suporte') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-blue-300 hover:text-white text-xs transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>

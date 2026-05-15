@@ -50,29 +50,10 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 
-                    <!-- Perfil de acesso -->
-                    <div class="mb-4">
-                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                            Perfil de Acesso
-                        </label>
-                        <div class="relative">
-                            <select name="role_hint"
-                                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-gray-700 bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-[#1a2f5e] focus:border-transparent text-sm">
-                                <option>Administrador</option>
-                                <option selected>Professor</option>
-                                <option>Empresa Parceira</option>
-                                <option>Secretaria</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Email -->
                     <div class="mb-4">
+                        <br>
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                             E-mail Corporativo
                         </label>

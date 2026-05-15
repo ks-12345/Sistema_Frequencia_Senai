@@ -24,6 +24,8 @@
         <p><strong>Curso:</strong> {{ $aluno->turma->curso ?? '—' }}</p>
         <img src="{{ route('aluno.imagem') }}" width="200" height="200" alt="QR Code">
         <p style="font-size:12px;color:#64748b;margin-top:12px;">Token: {{ $aluno->qrcode_token }}</p>
+        <a href="{{ route('aluno.leitura') }}" class="btn">Simular Leitura</a>
+        <br>
         <a href="{{ route('aluno.dashboard') }}" class="btn-secondary btn">Voltar ao Painel</a>
     </div>
 </body>

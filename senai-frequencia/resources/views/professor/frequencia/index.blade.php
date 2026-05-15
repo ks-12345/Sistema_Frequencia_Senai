@@ -96,16 +96,23 @@
                         </div>
                         <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl text-xs font-bold text-slate-600 border border-slate-100">
                             <i class="ti ti-users text-blue-500"></i>
-                            {{ rand(20, 35) }} Alunos
+                            {{ $turma->alunos()->count() }} Alunos
                         </div>
                     </div>
                 </div>
 
-                <a href="{{ route('professor.frequencia.lancar', $turma) }}" 
-                   class="group w-full bg-[#0a1128] hover:bg-blue-600 text-white font-bold py-5 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/10">
-                    Realizar Chamada
-                    <i class="ti ti-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </a>
+                <div class="space-y-3">
+                    <a href="{{ route('professor.frequencia.lancar', $turma) }}" 
+                       class="group w-full bg-[#0a1128] hover:bg-blue-600 text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/10">
+                        Realizar Chamada
+                        <i class="ti ti-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="{{ route('professor.frequencia.historico', $turma) }}" 
+                       class="w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-3">
+                        Ver / Editar Frequencias
+                        <i class="ti ti-edit text-lg"></i>
+                    </a>
+                </div>
             </div>
             @endforeach
         </div>

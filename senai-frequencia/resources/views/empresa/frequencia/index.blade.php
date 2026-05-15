@@ -143,9 +143,15 @@
                     <p class="text-slate-400 text-sm mt-1">Gere um documento oficial com a frequência de todo o quadro de aprendizes.</p>
                 </div>
             </div>
-            <button class="bg-white text-[#0a1128] px-10 py-5 rounded-2xl font-black hover:bg-blue-50 transition-all shadow-lg flex items-center gap-3">
-                <i class="ti ti-download text-xl"></i> Exportar Dados
-            </button>
+            <form method="GET" action="{{ route('empresa.frequencia.exportar') }}" class="bg-white text-[#0a1128] rounded-2xl shadow-lg p-2 flex flex-col sm:flex-row gap-2">
+                <select name="formato" class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm font-black outline-none">
+                    <option value="xlsx">Excel (.xlsx)</option>
+                    <option value="csv">CSV (.csv)</option>
+                </select>
+                <button class="px-8 py-3 rounded-xl font-black hover:bg-blue-50 transition-all flex items-center justify-center gap-3">
+                    <i class="ti ti-download text-xl"></i> Exportar Dados
+                </button>
+            </form>
         </div>
 
         <footer class="mt-12 text-center text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">

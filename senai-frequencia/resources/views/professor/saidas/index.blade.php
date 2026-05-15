@@ -84,8 +84,8 @@
                             </td>
                             <td class="px-6 py-6 whitespace-nowrap">
                                 <div class="flex flex-col">
-                                    <span class="text-sm font-bold text-slate-700">{{ $saida->horario_saida->format('d/m/Y') }}</span>
-                                    <span class="text-xs text-slate-400 font-mono">{{ $saida->horario_saida->format('H:i') }}</span>
+                                    <span class="text-sm font-bold text-slate-700">{{ $saida->data->format('d/m/Y') }}</span>
+                                    <span class="text-xs text-slate-400 font-mono">{{ substr($saida->horario_saida, 0, 5) }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-6">
@@ -96,16 +96,18 @@
                             <td class="px-6 py-6 text-center">
                                 @php
                                     $statusClasses = match($saida->status) {
-                                        'pendente'       => 'bg-amber-50 text-amber-600 border-amber-100',
-                                        'autorizada'     => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                                        'nao_autorizada' => 'bg-red-50 text-red-600 border-red-100',
-                                        default          => 'bg-slate-50 text-slate-500 border-slate-100'
+                                        'pendente' => 'bg-amber-50 text-amber-600 border-amber-100',
+                                        'em_analise' => 'bg-blue-50 text-blue-600 border-blue-100',
+                                        'justificado', 'aprovado' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                        'recusado', 'falta_mantida' => 'bg-red-50 text-red-600 border-red-100',
+                                        default => 'bg-slate-50 text-slate-500 border-slate-100'
                                     };
                                     $statusLabel = match($saida->status) {
-                                        'pendente'       => '⏳ Em Análise',
-                                        'autorizada'     => '✅ Autorizada',
-                                        'nao_autorizada' => '❌ Recusada',
-                                        default          => 'Indefinido'
+                                        'pendente' => 'Em Analise',
+                                        'em_analise' => 'Justificativa enviada',
+                                        'justificado', 'aprovado' => 'Justificada',
+                                        'recusado', 'falta_mantida' => 'Falta mantida',
+                                        default => 'Indefinido'
                                     };
                                 @endphp
                                 <span class="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase border {{ $statusClasses }}">
@@ -114,7 +116,7 @@
                             </td>
                             <td class="px-8 py-6">
                                 <span class="text-xs text-slate-400">
-                                    {{ $saida->validadoPor->name ?? '—' }}
+                                    {{ $saida->analisadoPor->name ?? '---' }}
                                 </span>
                             </td>
                         </tr>

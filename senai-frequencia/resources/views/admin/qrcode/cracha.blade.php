@@ -35,10 +35,6 @@
 
         <p style="font-size:11px;color:#999">{{ $aluno->qrcode_token }}</p>
 
-        <a href="{{ route('admin.qrcode.ler', $aluno->qrcode_token) }}" class="btn">
-            Simular Leitura
-        </a>
-        <br>
         <a href="{{ route('admin.alunos.index') }}" class="btn" style="background:#6b7280;margin-top:8px">
             Voltar
         </a>

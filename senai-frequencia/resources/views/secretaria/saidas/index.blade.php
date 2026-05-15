@@ -3,191 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validar Saídas – Secretaria SENAI</title>
-
+    <title>Fluxo de Saida Antecipada - Secretaria</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
-        .input-pill:focus {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            outline: none;
-        }
-        .sidebar-item:hover { background: rgba(255, 255, 255, 0.05); }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; background: #f1f5f9; }</style>
 </head>
 <body class="text-slate-900">
-
 <div class="flex min-h-screen">
-
     <aside class="w-72 bg-[#0a1128] text-white flex flex-col sticky top-0 h-screen shadow-2xl">
         <div class="h-24 flex flex-col justify-center px-8 border-b border-white/5">
-            <h1 class="text-xl font-bold tracking-tight flex items-center gap-2">
-                <i class="ti ti-shield-check text-blue-400"></i> Secretaria
-            </h1>
-            <p class="text-slate-400 text-[10px] uppercase tracking-widest font-black">Controle de Fluxo</p>
+            <h1 class="text-xl font-black flex items-center gap-2"><i class="ti ti-shield-check text-blue-400"></i> Secretaria</h1>
+            <p class="text-slate-400 text-[10px] uppercase tracking-widest font-black">Fluxo de Saida</p>
         </div>
-
         <nav class="flex-1 px-4 py-6 space-y-1">
-            <a href="#" class="sidebar-item flex items-center gap-4 px-4 py-3.5 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-900/40 transition">
+            <a href="{{ route('secretaria.saidas.index') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-900/40">
                 <i class="ti ti-door-exit text-xl"></i>
-                <span class="font-bold">Validar Saídas</span>
-            </a>
-            <a href="#" class="sidebar-item flex items-center gap-4 px-4 py-3.5 rounded-xl transition text-slate-400 hover:text-white">
-                <i class="ti ti-user-check text-xl"></i>
-                <span class="font-medium">Frequência Geral</span>
+                <span class="font-bold">Saidas Antecipadas</span>
             </a>
         </nav>
-
         <div class="p-6 border-t border-white/5">
-            <form method="POST" action="{{ route('logout') }}" id="logout-form">
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="w-full flex items-center justify-center gap-2 py-3.5 mb-4 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-red-600 hover:border-red-600 transition-all">
-                    <i class="ti ti-power text-base"></i> Sair do Sistema
+                <button class="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-red-600 hover:border-red-600">
+                    <i class="ti ti-power text-base"></i> Sair
                 </button>
             </form>
-            
-            <div class="bg-white/5 rounded-2xl p-4 flex items-center gap-3 border border-white/5">
-                <div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center font-bold text-white shadow-inner">
-                    <i class="ti ti-user-shield text-xl"></i>
-                </div>
-                <div class="truncate text-left">
-                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Administrador</p>
-                    <p class="text-xs font-bold text-white truncate">{{ auth()->user()->name ?? 'Usuário' }}</p>
-                </div>
-            </div>
         </div>
     </aside>
 
     <main class="flex-1 p-8 lg:p-12">
-
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
             <div>
-                <h2 class="text-4xl font-black text-[#0a1128] tracking-tight">Gestão de Saídas</h2>
-                <p class="text-slate-500 mt-2 font-medium">Validação e autorização de fluxo de aprendizes.</p>
+                <p class="text-blue-600 font-black text-[10px] uppercase tracking-[0.3em] mb-2">Secretaria</p>
+                <h1 class="text-4xl font-black text-[#0a1128] tracking-tight">Fluxo de Saida Antecipada</h1>
+                <p class="text-slate-500 mt-2">Analise justificativas, autorize saidas e acompanhe bloqueios.</p>
             </div>
+        </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            @foreach([
+                ['label' => 'Pendentes', 'value' => $resumo['pendente'], 'color' => 'amber'],
+                ['label' => 'Em analise', 'value' => $resumo['em_analise'], 'color' => 'blue'],
+                ['label' => 'Justificadas', 'value' => $resumo['justificado'], 'color' => 'emerald'],
+                ['label' => 'Faltas mantidas', 'value' => $resumo['falta_mantida'], 'color' => 'red'],
+            ] as $card)
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $card['label'] }}</p>
+                    <p class="text-3xl font-black text-{{ $card['color'] }}-600">{{ $card['value'] }}</p>
+                </div>
+            @endforeach
         </div>
 
         @if(session('success'))
-            <div class="mb-8 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-[1.5rem] p-5 flex items-center gap-3 shadow-sm animate-pulse">
-                <div class="bg-emerald-500 text-white p-1 rounded-full">
-                    <i class="ti ti-check text-sm"></i>
-                </div>
-                <span class="font-bold text-sm">{{ session('success') }}</span>
+            <div class="mb-6 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl p-4 font-bold text-sm">{{ session('success') }}</div>
+        @endif
+
+        @if($errors->any())
+            <div class="mb-6 bg-red-50 border border-red-100 text-red-700 rounded-2xl p-4 text-sm">
+                @foreach($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
             </div>
         @endif
 
-        <section class="mb-12">
-            <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-                <span class="w-2 h-2 bg-amber-500 rounded-full animate-ping"></span>
-                Pendentes de Validação
-            </h3>
+        <form method="GET" class="mb-6 flex flex-wrap gap-2">
+            @foreach(['' => 'Todos', 'pendente' => 'Pendente', 'em_analise' => 'Em analise', 'justificado' => 'Justificado', 'falta_mantida' => 'Falta mantida'] as $value => $label)
+                <button name="status" value="{{ $value }}" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest border {{ $status === $value || (!$status && $value === '') ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200' }}">
+                    {{ $label }}
+                </button>
+            @endforeach
+        </form>
 
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                @forelse($pendentes as $saida)
-                <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all p-8 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-bl-[5rem] -mr-10 -mt-10 transition-colors group-hover:bg-amber-100/40"></div>
-                    
-                    <div class="relative">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <h4 class="text-2xl font-black text-[#0a1128] tracking-tight">{{ $saida->aluno->nome }}</h4>
-                                <p class="text-xs text-blue-600 font-black uppercase tracking-widest mt-1">{{ $saida->aluno->turma->nome ?? 'Sem Turma' }}</p>
-                            </div>
-                            <div class="bg-white shadow-sm border border-slate-100 px-4 py-2 rounded-2xl text-right">
-                                <span class="text-[9px] font-black text-slate-400 block uppercase tracking-tighter">Horário</span>
-                                <span class="text-xl font-mono font-black text-slate-700">{{ $saida->horario_saida->format('H:i') }}</span>
-                            </div>
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            @forelse($solicitacoes as $saida)
+                @php
+                    $isAberta = in_array($saida->status, ['pendente', 'em_analise'], true);
+                    $menor = $saida->aluno?->isMenorDeIdade();
+                @endphp
+                <section class="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
+                    <div class="flex items-start justify-between gap-4 mb-5">
+                        <div>
+                            <h2 class="text-2xl font-black text-[#0a1128]">{{ $saida->aluno->nome }}</h2>
+                            <p class="text-xs text-blue-600 font-black uppercase tracking-widest">{{ $saida->turma->nome ?? 'Sem turma' }}</p>
                         </div>
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $isAberta ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-slate-50 text-slate-600 border-slate-100' }}">
+                            {{ str_replace('_', ' ', $saida->status) }}
+                        </span>
+                    </div>
 
-                        <div class="space-y-4 mb-8">
-                            <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <i class="ti ti-quote text-blue-300 text-2xl"></i>
-                                <span class="text-sm text-slate-600 font-medium italic">"{{ $saida->motivo ?? 'Não informado' }}"</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">
-                                <i class="ti ti-user-edit text-blue-500"></i>
-                                Solicitado por: <span class="text-slate-600">{{ $saida->solicitadoPor->name }}</span>
-                            </div>
+                    <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+                        <div class="rounded-2xl bg-slate-50 p-4">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Data/Hora</p>
+                            <p class="font-bold text-slate-700">{{ $saida->data->format('d/m/Y') }} {{ substr($saida->horario_saida, 0, 5) }}</p>
                         </div>
-
-                        <div class="flex flex-col gap-3">
-                            <form method="POST" action="{{ route('secretaria.saidas.autorizar', $saida) }}" class="flex gap-2">
-                                @csrf @method('PATCH')
-                                <input type="text" name="observacao_secretaria" placeholder="Observações de liberação..." 
-                                       class="flex-1 bg-slate-50 border-none rounded-2xl px-5 py-3 text-xs input-pill font-medium">
-                                <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-900/10 active:scale-95">
-                                    Liberar
-                                </button>
-                            </form>
-                            
-                            <form method="POST" action="{{ route('secretaria.saidas.nao-autorizar', $saida) }}" class="flex gap-2">
-                                @csrf @method('PATCH')
-                                <input type="text" name="observacao_secretaria" required placeholder="Motivo da recusa (obrigatório)..." 
-                                       class="flex-1 bg-red-50/30 border-none rounded-2xl px-5 py-3 text-xs input-pill font-medium text-red-900 placeholder:text-red-300">
-                                <button class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-red-900/10 active:scale-95">
-                                    Recusar
-                                </button>
-                            </form>
+                        <div class="rounded-2xl bg-slate-50 p-4">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Menor de idade</p>
+                            <p class="font-bold {{ $menor ? 'text-red-600' : 'text-emerald-600' }}">{{ $menor ? 'Sim' : 'Nao' }}</p>
                         </div>
                     </div>
-                </div>
-                @empty
-                <div class="col-span-full bg-white/50 border-2 border-dashed border-slate-200 rounded-[3rem] p-16 text-center">
-                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100">
-                        <i class="ti ti-circle-check text-emerald-500 text-4xl"></i>
-                    </div>
-                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Nenhuma solicitação pendente</p>
-                </div>
-                @endforelse
-            </div>
-        </section>
 
-        <section>
-            <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Histórico Recente</h3>
-            <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            <th class="px-8 py-5">Aprendiz</th>
-                            <th class="px-6 py-5">Data/Hora</th>
-                            <th class="px-6 py-5 text-center">Status</th>
-                            <th class="px-8 py-5">Observação Secretaria</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50 text-sm font-medium">
-                        @forelse($historico as $saida)
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="px-8 py-5 text-[#0a1128] font-bold">{{ $saida->aluno->nome }}</td>
-                            <td class="px-6 py-5 text-slate-500 font-mono text-xs">{{ $saida->horario_saida->format('d/m/Y H:i') }}</td>
-                            <td class="px-6 py-5 text-center">
-                                @if($saida->status === 'autorizada')
-                                    <span class="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter">Autorizada</span>
-                                @else
-                                    <span class="bg-red-50 text-red-600 border border-red-100 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter">Recusada</span>
-                                @endif
-                            </td>
-                            <td class="px-8 py-5 text-slate-400 italic text-xs max-w-xs truncate">{{ $saida->observacao_secretaria ?? '—' }}</td>
-                        </tr>
+                    <p class="text-sm text-slate-600 mb-2"><strong>Motivo:</strong> {{ $saida->motivo }}</p>
+                    <p class="text-sm text-slate-500 mb-5"><strong>Observacao:</strong> {{ $saida->observacoes ?? '---' }}</p>
+
+                    <div class="border-t border-slate-100 pt-5 mb-5">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Justificativas e anexos</h3>
+                        @forelse($saida->justificativas as $justificativa)
+                            <div class="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-3">
+                                <p class="text-sm text-slate-600">{{ $justificativa->descricao }}</p>
+                                <div class="mt-2 flex flex-wrap gap-3 text-xs font-bold text-slate-400">
+                                    <span>{{ str_replace('_', ' ', $justificativa->status) }}</span>
+                                    @if($justificativa->arquivo)
+                                        <a href="{{ asset('storage/'.$justificativa->arquivo) }}" target="_blank" class="text-blue-600 hover:text-blue-800">Abrir anexo</a>
+                                    @endif
+                                </div>
+                            </div>
                         @empty
-                        <tr>
-                            <td colspan="4" class="px-8 py-10 text-center text-slate-300 italic text-xs">Sem registros históricos.</td>
-                        </tr>
+                            <p class="text-sm text-slate-400 italic">Aluno ainda nao enviou justificativa.</p>
                         @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                    </div>
 
-        <footer class="mt-16 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">
-            Rede SENAI &copy; 2026 — Protocolo de Segurança Escolar
-        </footer>
+                    @if($isAberta)
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <form method="POST" action="{{ route('secretaria.saidas.autorizar', $saida) }}" class="rounded-2xl bg-emerald-50 border border-emerald-100 p-4">
+                                @csrf @method('PATCH')
+                                <input type="hidden" name="decisao" value="aprovar">
+                                <textarea name="observacao" rows="2" placeholder="Observacao da aprovacao..." class="w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm outline-none"></textarea>
+                                <button class="mt-3 w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl py-3 text-xs font-black uppercase tracking-widest">Aprovar</button>
+                            </form>
+                            <form method="POST" action="{{ route('secretaria.saidas.nao-autorizar', $saida) }}" class="rounded-2xl bg-red-50 border border-red-100 p-4">
+                                @csrf @method('PATCH')
+                                <input type="hidden" name="decisao" value="recusar">
+                                <textarea name="observacao" rows="2" required placeholder="Motivo da recusa..." class="w-full rounded-xl border border-red-100 px-3 py-2 text-sm outline-none"></textarea>
+                                <button class="mt-3 w-full bg-red-600 hover:bg-red-700 text-white rounded-xl py-3 text-xs font-black uppercase tracking-widest">Recusar</button>
+                            </form>
+                        </div>
+                    @else
+                        <p class="rounded-2xl bg-slate-50 border border-slate-100 p-4 text-sm font-bold text-slate-400">Analise encerrada por {{ $saida->analisadoPor->name ?? 'secretaria' }}.</p>
+                    @endif
+                </section>
+            @empty
+                <div class="xl:col-span-2 bg-white border-2 border-dashed border-slate-200 rounded-[2rem] p-12 text-center text-slate-400 font-bold">Nenhuma solicitacao encontrada.</div>
+            @endforelse
+        </div>
 
+        <div class="mt-8">{{ $solicitacoes->links() }}</div>
     </main>
 </div>
-
 </body>
 </html>

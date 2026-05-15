@@ -29,6 +29,10 @@ class Aluno extends Model
         });
     }
 
+    protected $casts = [
+        'data_nascimento' => 'date',
+    ];
+
     public function turma()
     {
         return $this->belongsTo(Turma::class);
@@ -47,5 +51,20 @@ class Aluno extends Model
     public function frequencias()
     {
         return $this->hasMany(Frequencia::class);
+    }
+
+    public function solicitacoesSaida()
+    {
+        return $this->hasMany(SolicitacaoSaida::class);
+    }
+
+    public function tentativasSaida()
+    {
+        return $this->hasMany(TentativaSaida::class);
+    }
+
+    public function isMenorDeIdade(): bool
+    {
+        return $this->data_nascimento ? $this->data_nascimento->age < 18 : false;
     }
 }

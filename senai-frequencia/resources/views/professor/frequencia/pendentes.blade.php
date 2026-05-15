@@ -27,7 +27,7 @@
 
         <nav class="flex-1 px-4 py-6 space-y-1">
             <a href="{{ route('professor.dashboard') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-white/10 transition text-slate-300">
-                <i class="ti ti-smart-home text-xl"></i>
+                <i class="ti ti-layout-dashboardhboard text-xl"></i>
                 <span class="font-medium">Início</span>
             </a>
             <a href="{{ route('professor.frequencia.index') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 shadow-lg">

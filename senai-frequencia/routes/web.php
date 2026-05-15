@@ -9,6 +9,10 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+Route::get('/suporte', function () {
+    return view('suporte');
+})->name('suporte');
+
 // Rotas do Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
@@ -28,15 +32,11 @@ Route::patch('turmas/{turma}/finalizar', [\App\Http\Controllers\Admin\TurmaContr
 Route::patch('turmas/{turma}/reativar', [\App\Http\Controllers\Admin\TurmaController::class, 'reativar'])->name('turmas.reativar');
 Route::get('alunos/{aluno}/cracha', [\App\Http\Controllers\Admin\QrCodeController::class, 'cracha'])->name('qrcode.cracha');
 Route::get('alunos/{aluno}/qrcode', [\App\Http\Controllers\Admin\QrCodeController::class, 'imagem'])->name('qrcode.imagem');
-Route::get('qrcode/ler/{token}', [\App\Http\Controllers\Admin\QrCodeController::class, 'lerQrCode'])->name('qrcode.ler');
 Route::get('turmas/{turma}/certificados', [\App\Http\Controllers\Admin\CertificadoController::class, 'index'])->name('certificados.index');
 Route::post('turmas/{turma}/certificados/gerar-todos', [\App\Http\Controllers\Admin\CertificadoController::class, 'gerarTodos'])->name('certificados.gerar-todos');
 Route::post('turmas/{turma}/alunos/{aluno}/certificado', [\App\Http\Controllers\Admin\CertificadoController::class, 'gerar'])->name('certificados.gerar');
 Route::get('certificados/{certificado}/download', [\App\Http\Controllers\Admin\CertificadoController::class, 'download'])->name('certificados.download');
 Route::get('acesso', [\App\Http\Controllers\Admin\AcessoController::class, 'index'])->name('acesso.index');
-Route::get('acesso/leitura', [\App\Http\Controllers\Admin\AcessoController::class, 'leitura'])->name('acesso.leitura');
-Route::post('acesso/registrar', [\App\Http\Controllers\Admin\AcessoController::class, 'registrar'])->name('acesso.registrar');
-Route::get('acesso/resultado/{registro}', [\App\Http\Controllers\Admin\AcessoController::class, 'resultado'])->name('acesso.resultado');
 Route::get('acesso/historico/{aluno}', [\App\Http\Controllers\Admin\AcessoController::class, 'historico'])->name('acesso.historico');
 Route::get('diario', [\App\Http\Controllers\Admin\DiarioAulaController::class, 'index'])->name('diario.index');
 Route::get('diario/{turma}', [\App\Http\Controllers\Admin\DiarioAulaController::class, 'turma'])->name('diario.turma');
@@ -55,6 +55,9 @@ Route::middleware(['auth', 'role:professor'])->prefix('professor')->name('profes
     Route::get('/dashboard', [ProfessorDashboard::class, 'index'])->name('dashboard');
     Route::get('/frequencia', [\App\Http\Controllers\Professor\FrequenciaController::class, 'index'])->name('frequencia.index');
     Route::get('/frequencia/{turma}/lancar', [\App\Http\Controllers\Professor\FrequenciaController::class, 'lancar'])->name('frequencia.lancar');
+    Route::get('/frequencia/{turma}/historico', [\App\Http\Controllers\Professor\FrequenciaController::class, 'historico'])->name('frequencia.historico');
+    Route::get('/frequencia/{turma}/historico/{data}/editar', [\App\Http\Controllers\Professor\FrequenciaController::class, 'editar'])->name('frequencia.editar');
+    Route::put('/frequencia/{turma}/historico/{data}', [\App\Http\Controllers\Professor\FrequenciaController::class, 'atualizar'])->name('frequencia.atualizar');
     Route::post('/frequencia', [\App\Http\Controllers\Professor\FrequenciaController::class, 'store'])->name('frequencia.store');
     Route::get('/frequencia/pendentes', [\App\Http\Controllers\Professor\FrequenciaController::class, 'pendentes'])->name('frequencia.pendentes');
     Route::patch('/frequencia/{frequencia}/aprovar', [\App\Http\Controllers\Professor\FrequenciaController::class, 'aprovar'])->name('frequencia.aprovar');
@@ -76,6 +79,7 @@ Route::middleware(['auth', 'role:empresa'])->prefix('empresa')->name('empresa.')
     Route::get('/dashboard', [\App\Http\Controllers\Empresa\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/alunos', [\App\Http\Controllers\Empresa\AlunosController::class, 'index'])->name('alunos.index');
     Route::get('/frequencia', [\App\Http\Controllers\Empresa\FrequenciaController::class, 'index'])->name('frequencia.index');
+    Route::get('/frequencia/exportar', [\App\Http\Controllers\Empresa\FrequenciaController::class, 'exportar'])->name('frequencia.exportar');
     Route::get('/frequencia/{aluno}', [\App\Http\Controllers\Empresa\FrequenciaController::class, 'show'])->name('frequencia.show');
 });
 
@@ -84,6 +88,11 @@ Route::middleware(['auth', 'role:aluno'])->prefix('aluno')->name('aluno.')->grou
     Route::get('/dashboard', [\App\Http\Controllers\Aluno\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/cracha', [\App\Http\Controllers\Aluno\QrCodeController::class, 'cracha'])->name('cracha');
     Route::get('/qrcode', [\App\Http\Controllers\Aluno\QrCodeController::class, 'imagem'])->name('imagem');
+    Route::get('/cracha/leitura', [\App\Http\Controllers\Aluno\QrCodeController::class, 'leitura'])->name('leitura');
+    Route::post('/cracha/registrar-acesso', [\App\Http\Controllers\Aluno\QrCodeController::class, 'registrarAcesso'])->name('registrar-acesso');
+    Route::get('/cracha/resultado/{registro}', [\App\Http\Controllers\Aluno\QrCodeController::class, 'resultado'])->name('resultado');
+    Route::get('/justificativas', [\App\Http\Controllers\Aluno\JustificativaController::class, 'index'])->name('justificativas.index');
+    Route::post('/justificativas', [\App\Http\Controllers\Aluno\JustificativaController::class, 'store'])->name('justificativas.store');
 });
 
 require __DIR__.'/auth.php';

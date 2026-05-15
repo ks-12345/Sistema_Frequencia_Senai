@@ -77,6 +77,15 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="mb-8 bg-red-50 border border-red-100 text-red-700 rounded-2xl p-4">
+                    <p class="font-bold text-sm mb-1">Revise os dados da chamada</p>
+                    @foreach($errors->all() as $error)
+                        <p class="text-sm">{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
+
             <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
                 <table class="w-full text-left">
                     <thead>
@@ -107,11 +116,39 @@
                                     <option value="presente" class="text-emerald-600 font-bold">🟢 Presente</option>
                                     <option value="falta" class="text-red-600 font-bold">🔴 Falta</option>
                                     <option value="atraso" class="text-amber-600 font-bold">🟡 Atraso</option>
+                                    <option value="saida_antecipada" class="text-blue-600 font-bold">Saida antecipada</option>
                                 </select>
                             </td>
                             <td class="px-8 py-5">
                                 <input type="text" name="observacoes[{{ $aluno->id }}]" placeholder="Nota opcional..."
                                        class="w-full bg-slate-50 border border-transparent rounded-xl px-4 py-2 text-sm text-slate-600 placeholder:text-slate-300 outline-none focus:bg-white focus:border-slate-200 transition-all italic">
+                                <div class="saida-fields mt-3 hidden rounded-2xl border border-blue-100 bg-blue-50/60 p-4" data-aluno="{{ $aluno->id }}">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1">Horario da saida</label>
+                                            <input type="time" name="saida_horario[{{ $aluno->id }}]"
+                                                   class="w-full rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-400">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1">Justificativa no momento</label>
+                                            <select name="saida_apresentou_justificativa[{{ $aluno->id }}]"
+                                                    class="w-full rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-400">
+                                                <option value="0">Nao apresentou</option>
+                                                <option value="1">Apresentou</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <label class="block text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1">Motivo informado pelo aluno</label>
+                                        <input type="text" name="saida_motivo[{{ $aluno->id }}]" placeholder="Ex: consulta medica, emergencia familiar..."
+                                               class="w-full rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-400">
+                                    </div>
+                                    <div class="mt-3">
+                                        <label class="block text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1">Observacao adicional</label>
+                                        <textarea name="saida_observacoes[{{ $aluno->id }}]" rows="2"
+                                                  class="w-full rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-400"></textarea>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -132,5 +169,21 @@
     </main>
 </div>
 
+<script>
+    document.querySelectorAll('select[name^="frequencias"]').forEach((select) => {
+        const toggleFields = () => {
+            const match = select.name.match(/\[(\d+)\]/);
+            if (!match) return;
+
+            const fields = document.querySelector(`.saida-fields[data-aluno="${match[1]}"]`);
+            if (!fields) return;
+
+            fields.classList.toggle('hidden', select.value !== 'saida_antecipada');
+        };
+
+        select.addEventListener('change', toggleFields);
+        toggleFields();
+    });
+</script>
 </body>
 </html>

@@ -104,6 +104,9 @@
                         <a href="{{ route('aluno.cracha') }}" class="mt-6 w-full inline-flex items-center justify-center gap-2 bg-[#0a1128] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20 active:scale-95">
                             <i class="ti ti-scan text-lg"></i> Abrir Meu Crachá
                         </a>
+                        <a href="{{ route('aluno.justificativas.index') }}" class="mt-3 w-full inline-flex items-center justify-center gap-2 bg-white text-[#0a1128] border border-blue-100 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-50 transition-all active:scale-95">
+                            <i class="ti ti-file-description text-lg"></i> Justificativas e Atestados
+                        </a>
                     </div>
                 </div>
             </div>

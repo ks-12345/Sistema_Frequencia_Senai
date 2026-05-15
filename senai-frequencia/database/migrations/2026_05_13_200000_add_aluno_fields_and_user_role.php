@@ -17,7 +17,9 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->after('empresa_id');
         });
 
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin','professor','empresa','secretaria','aluno') NOT NULL DEFAULT 'professor'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY role ENUM('admin','professor','empresa','secretaria','aluno') NOT NULL DEFAULT 'professor'");
+        }
     }
 
     public function down(): void
@@ -27,6 +29,8 @@ return new class extends Migration
             $table->dropColumn(['user_id', 'endereco', 'data_nascimento', 'email', 'cpf']);
         });
 
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin','professor','empresa') NOT NULL DEFAULT 'professor'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY role ENUM('admin','professor','empresa') NOT NULL DEFAULT 'professor'");
+        }
     }
 };

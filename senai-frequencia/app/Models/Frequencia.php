@@ -34,4 +34,9 @@ class Frequencia extends Model
     {
         return $this->belongsTo(User::class, 'aprovado_por_id');
     }
+
+    public function solicitacaoSaida()
+    {
+        return $this->hasOne(SolicitacaoSaida::class);
+    }
 }

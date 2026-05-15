@@ -125,7 +125,8 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-bold text-[#0a1128]">Credenciais de Acesso</h3>
-                            <p class="text-slate-400 text-sm">Email e senha para o login da empresa</p>
+                            <p class="text-slate-400 text-sm">Email e senha para o         function toggleSenha() {
+ da empresa</p>
                         </div>
                     </div>
                     
