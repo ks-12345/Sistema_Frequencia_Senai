@@ -14,11 +14,22 @@ class Frequencia extends Model
         'status_presenca',
         'status_aprovacao',
         'observacao',
+
+        // Fluxo Professor -> Secretaria -> Empresa
+        'status',
+        'enviado_secretaria_em',
+        'aprovado_secretaria_em',
+        'aprovado_por',
+        'motivo_devolucao',
     ];
+
 
     protected $casts = [
         'data' => 'date',
+        'enviado_secretaria_em' => 'datetime',
+        'aprovado_secretaria_em' => 'datetime',
     ];
+
 
     public function aluno()
     {

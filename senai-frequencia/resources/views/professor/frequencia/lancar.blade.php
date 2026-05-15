@@ -67,6 +67,12 @@
                     <button type="submit" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3.5 rounded-2xl transition shadow-lg shadow-emerald-900/10 flex items-center justify-center gap-2">
                         <i class="ti ti-device-floppy text-xl"></i> Salvar Chamada
                     </button>
+
+                    {{-- Envio para Secretaria (bulk por turma/data) será adicionado após criação da rota/controller --}}
+                    <button type="button" disabled
+                            class="w-full sm:w-auto bg-slate-200 text-slate-500 font-bold px-8 py-3.5 rounded-2xl transition shadow-lg shadow-slate-200/20 flex items-center justify-center gap-2 opacity-60 cursor-not-allowed">
+                        <i class="ti ti-send text-xl"></i> Enviar para Secretaria
+                    </button>
                 </div>
             </div>
 

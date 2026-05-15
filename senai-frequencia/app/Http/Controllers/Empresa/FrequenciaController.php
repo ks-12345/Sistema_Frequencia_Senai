@@ -29,10 +29,13 @@ class FrequenciaController extends Controller
             abort(403);
         }
 
+        // Empresa só pode visualizar frequências aprovadas pela Secretaria
         $frequencias = Frequencia::with('lancadoPor')
             ->where('aluno_id', $aluno->id)
+            ->where('status', 'aprovado')
             ->orderBy('data', 'desc')
             ->paginate(20);
+
 
         $total     = $frequencias->total();
         $presencas = Frequencia::where('aluno_id', $aluno->id)
@@ -54,9 +57,11 @@ class FrequenciaController extends Controller
         $empresaId = Auth::user()->empresa_id;
 
         $frequencias = Frequencia::with(['aluno.turma', 'lancadoPor'])
+            ->where('status', 'aprovado')
             ->whereHas('aluno', fn ($query) => $query->where('empresa_id', $empresaId))
             ->when($request->data_inicio, fn ($query) => $query->whereDate('data', '>=', $request->data_inicio))
             ->when($request->data_fim, fn ($query) => $query->whereDate('data', '<=', $request->data_fim))
+
             ->orderBy('data', 'desc')
             ->orderBy(
                 Aluno::select('nome')

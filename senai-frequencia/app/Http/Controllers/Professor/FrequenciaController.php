@@ -43,8 +43,10 @@ class FrequenciaController extends Controller
     public function store(RegistrarSaidaAntecipadaRequest $request)
     {
         $user            = Auth::user();
-        $statusAprovacao = $user->is_substituto ? 'pendente' : 'aprovado';
+        // Fluxo Professor -> Secretaria -> Empresa (status novo)
+        $statusProfessor = $user->is_substituto ? 'pendente_aprovacao' : 'aprovado';
         $turma           = Turma::with('alunos')->findOrFail($request->turma_id);
+
         $alunosIds       = $turma->alunos->pluck('id')->all();
 
         foreach ($request->frequencias as $alunoId => $status) {
@@ -58,7 +60,17 @@ class FrequenciaController extends Controller
                     ->withErrors(['saida_antecipada' => 'Informe horario e motivo para todas as saidas antecipadas.']);
             }
 
-            $frequencia = Frequencia::updateOrCreate(
+            // Se a frequência já está aguardando aprovação, não permite sobrescrever automaticamente.
+            // (O professor pode ajustar apenas antes de enviar para secretaria.)
+            $frequenciaExistente = Frequencia::where('aluno_id', $alunoId)
+                ->whereDate('data', $request->data)
+                ->first();
+
+            if ($frequenciaExistente && $frequenciaExistente->status === 'pendente_aprovacao') {
+                continue;
+            }
+
+            Frequencia::updateOrCreate(
                 [
                     'aluno_id' => $alunoId,
                     'data'     => $request->data,
@@ -66,10 +78,13 @@ class FrequenciaController extends Controller
                 [
                     'lancado_por_id'   => $user->id,
                     'status_presenca'  => $status,
-                    'status_aprovacao' => $statusAprovacao,
+                    // Fluxo Professor -> Secretaria -> Empresa (status novo)
+                    'status'            => $statusProfessor,
                     'observacao'       => $request->observacoes[$alunoId] ?? null,
                 ]
             );
+
+
 
             if ($status === 'saida_antecipada') {
                 $solicitacao = SolicitacaoSaida::updateOrCreate(
@@ -80,7 +95,10 @@ class FrequenciaController extends Controller
                     [
                         'professor_id' => $user->id,
                         'turma_id' => $turma->id,
-                        'frequencia_id' => $frequencia->id,
+                        // Frequência atual pode ser obtida novamente (bulk por data/turma será ajustado no próximo passo)
+                        'frequencia_id' => Frequencia::where('aluno_id', $alunoId)
+                            ->whereDate('data', $request->data)
+                            ->value('id'),
                         'horario_saida' => $request->saida_horario[$alunoId],
                         'motivo' => $request->saida_motivo[$alunoId],
                         'observacoes' => $request->saida_observacoes[$alunoId] ?? null,
@@ -110,7 +128,7 @@ class FrequenciaController extends Controller
         $turmasIds = Turma::where('professor_id', Auth::id())->pluck('id');
 
         $frequencias = Frequencia::with(['aluno.turma', 'lancadoPor'])
-            ->where('status_aprovacao', 'pendente')
+            ->where('status', 'pendente_aprovacao')
             ->whereHas('aluno', function ($q) use ($turmasIds) {
                 $q->whereIn('turma_id', $turmasIds);
             })
@@ -119,6 +137,7 @@ class FrequenciaController extends Controller
 
         return view('professor.frequencia.pendentes', compact('frequencias'));
     }
+
 
     public function historico(Turma $turma)
     {
@@ -158,6 +177,20 @@ class FrequenciaController extends Controller
     public function atualizar(Request $request, Turma $turma, string $data)
     {
         $this->autorizarTurma($turma);
+
+        // Bloqueia edição quando a secretaria já recebeu (pendente de aprovação)
+        // Observação: por requisito, após envio o professor não deve editar.
+        $jaEnviado = Frequencia::whereHas('aluno', fn($q) => $q->where('turma_id', $turma->id))
+            ->whereDate('data', $data)
+            ->where('status', 'pendente_aprovacao')
+            ->exists();
+
+        if ($jaEnviado) {
+            return back()->withErrors([
+                'frequencia_bloqueada' => 'Esta frequência foi enviada para a Secretaria e está aguardando aprovação. Edição bloqueada.'
+            ]);
+        }
+
 
         $request->validate([
             'frequencias' => ['required', 'array'],
