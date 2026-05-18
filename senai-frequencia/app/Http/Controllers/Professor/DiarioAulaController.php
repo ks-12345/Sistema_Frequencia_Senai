@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Professor;
 
 use App\Http\Controllers\Controller;
 use App\Models\DiarioAula;
+use App\Models\TeacherSubstitutionLog;
 use App\Models\Turma;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,9 +14,23 @@ class DiarioAulaController extends Controller
     private function getTurmasDoUsuario()
     {
         $user = Auth::user();
+        $mode = session('teacher_acting_mode');
 
-        if ($user->is_substituto) {
-            return $user->turmas;
+        if (!$mode) {
+            return collect();
+        }
+
+        if ($mode === 'substituto') {
+            $log = TeacherSubstitutionLog::where('teacher_id', $user->id)
+                ->where('status', 'ativa')
+                ->find(session('teacher_substitution_log_id'));
+
+            if (!$log) {
+                session()->forget(['teacher_acting_mode', 'teacher_substitution_log_id', 'teacher_substitution_class_id']);
+                return collect();
+            }
+
+            return Turma::where('id', $log->class_id)->get();
         }
 
         return Turma::where('professor_id', $user->id)->get();
@@ -23,6 +38,10 @@ class DiarioAulaController extends Controller
 
     public function index()
     {
+        if (!session('teacher_acting_mode')) {
+            return redirect()->route('professor.context.select');
+        }
+
         $turmas = $this->getTurmasDoUsuario();
 
         return view('professor.diario.index', compact('turmas'));
@@ -66,6 +85,12 @@ class DiarioAulaController extends Controller
 
     public function store(Request $request, Turma $turma)
     {
+        $turmas = $this->getTurmasDoUsuario();
+
+        if (!$turmas->contains('id', $turma->id)) {
+            abort(403);
+        }
+
         $request->validate([
             'data'        => 'required|date',
             'titulo'      => 'required|string|max:255',
@@ -94,6 +119,10 @@ class DiarioAulaController extends Controller
             abort(403);
         }
 
+        if ((int) $aula->turma_id !== (int) $turma->id) {
+            abort(404);
+        }
+
         if ($turma->isFinalizada()) {
             return redirect()->route('professor.diario.turma', $turma)
                              ->with('error', 'Turma finalizada. Não é possível editar.');
@@ -104,6 +133,16 @@ class DiarioAulaController extends Controller
 
     public function update(Request $request, Turma $turma, DiarioAula $aula)
     {
+        $turmas = $this->getTurmasDoUsuario();
+
+        if (!$turmas->contains('id', $turma->id)) {
+            abort(403);
+        }
+
+        if ((int) $aula->turma_id !== (int) $turma->id) {
+            abort(404);
+        }
+
         $request->validate([
             'data'        => 'required|date',
             'titulo'      => 'required|string|max:255',
@@ -119,6 +158,16 @@ class DiarioAulaController extends Controller
 
     public function destroy(Turma $turma, DiarioAula $aula)
     {
+        $turmas = $this->getTurmasDoUsuario();
+
+        if (!$turmas->contains('id', $turma->id)) {
+            abort(403);
+        }
+
+        if ((int) $aula->turma_id !== (int) $turma->id) {
+            abort(404);
+        }
+
         $aula->delete();
 
         return redirect()->route('professor.diario.turma', $turma)

@@ -28,6 +28,10 @@
         </div>
 
         <nav class="flex-1 px-4 py-6 space-y-2">
+            <a href="{{ route('professor.context.select') }}" class="sidebar-item flex items-center gap-4 px-4 py-3.5 rounded-xl transition text-slate-400 hover:text-white">
+                <i class="ti ti-switch-horizontal text-xl"></i>
+                <span class="font-medium">Trocar Atuacao</span>
+            </a>
             <a href="#" class="sidebar-item flex items-center gap-4 px-4 py-3.5 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-900/20 transition">
                 <i class="ti ti-layout-dashboard text-xl"></i>
                 <span class="font-bold">Dashboard</span>
@@ -72,6 +76,39 @@
             <h2 class="text-4xl font-black text-[#0a1128] tracking-tight">Bem-vindo, Docente.</h2>
             <p class="text-slate-500 mt-2 font-medium">Selecione uma das ferramentas abaixo para gerenciar suas turmas.</p>
         </header>
+
+        @if(session('success'))
+            <div class="mb-8 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl p-4 font-bold">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <section class="mb-8 bg-white border border-slate-200 rounded-3xl p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 shadow-sm">
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Modo Atual</p>
+                <h3 class="text-xl font-black text-[#0a1128] mt-1">
+                    Professor {{ session('teacher_acting_mode') === 'substituto' ? 'Substituto' : 'Titular' }}
+                </h3>
+                @if($activeSubstitution)
+                    <p class="text-sm text-slate-500 mt-1">
+                        Turma {{ $activeSubstitution->turma->nome ?? '-' }} substituindo {{ $activeSubstitution->substitutedTeacher->name ?? '-' }}
+                    </p>
+                @endif
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('professor.context.select') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl font-bold flex items-center gap-2">
+                    <i class="ti ti-switch-horizontal"></i> Alternar
+                </a>
+                @if($activeSubstitution)
+                    <form method="POST" action="{{ route('professor.context.finish') }}">
+                        @csrf
+                        <button class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2">
+                            <i class="ti ti-player-stop"></i> Encerrar
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </section>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             

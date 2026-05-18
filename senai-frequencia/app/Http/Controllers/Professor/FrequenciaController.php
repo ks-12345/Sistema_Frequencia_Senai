@@ -7,6 +7,7 @@ use App\Http\Requests\RegistrarSaidaAntecipadaRequest;
 use App\Models\Frequencia;
 use App\Models\HistoricoSolicitacaoSaida;
 use App\Models\SolicitacaoSaida;
+use App\Models\TeacherSubstitutionLog;
 use App\Models\Turma;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,18 +17,34 @@ class FrequenciaController extends Controller
     private function getTurmasDoUsuario()
     {
         $user = Auth::user();
+        $mode = session('teacher_acting_mode');
 
-        if ($user->is_substituto) {
-            // Substituto: busca turmas vinculadas pela tabela pivot
-            return $user->turmas;
+        if (!$mode) {
+            return collect();
         }
 
-        // Professor titular: busca turmas pelo professor_id
+        if ($mode === 'substituto') {
+            $log = TeacherSubstitutionLog::where('teacher_id', $user->id)
+                ->where('status', 'ativa')
+                ->find(session('teacher_substitution_log_id'));
+
+            if (!$log) {
+                session()->forget(['teacher_acting_mode', 'teacher_substitution_log_id', 'teacher_substitution_class_id']);
+                return collect();
+            }
+
+            return Turma::where('id', $log->class_id)->get();
+        }
+
         return Turma::where('professor_id', $user->id)->get();
     }
 
     public function index()
     {
+        if (!session('teacher_acting_mode')) {
+            return redirect()->route('professor.context.select');
+        }
+
         $turmas = $this->getTurmasDoUsuario();
         return view('professor.frequencia.index', compact('turmas'));
     }
@@ -45,6 +62,7 @@ class FrequenciaController extends Controller
         $user      = Auth::user();
         $enviar    = $request->input('acao') === 'enviar';
         $turma     = Turma::with('alunos')->findOrFail($request->turma_id);
+        $this->autorizarTurma($turma);
 
         $alunosIds = $turma->alunos->pluck('id')->all();
 
@@ -126,6 +144,10 @@ class FrequenciaController extends Controller
 
     public function pendentes()
     {
+        if (!session('teacher_acting_mode')) {
+            return redirect()->route('professor.context.select');
+        }
+
         $turmasIds = Turma::where('professor_id', Auth::id())->pluck('id');
 
         $frequencias = Frequencia::with(['aluno.turma', 'lancadoPor'])
@@ -222,7 +244,7 @@ class FrequenciaController extends Controller
                 [
                     'lancado_por_id' => $user->id,
                     'status_presenca' => $status,
-                    'status_aprovacao' => $frequencia?->status_aprovacao ?? ($user->is_substituto ? 'pendente' : 'aprovado'),
+                    'status_aprovacao' => $frequencia?->status_aprovacao ?? (session('teacher_acting_mode') === 'substituto' ? 'pendente' : 'aprovado'),
                     'aprovado_por' => $frequencia?->aprovado_por,
                     'observacao' => $request->observacoes[$alunoId] ?? null,
                 ]
@@ -267,6 +289,10 @@ class FrequenciaController extends Controller
 
     public function lancar(Turma $turma)
 {
+    if (!session('teacher_acting_mode')) {
+        return redirect()->route('professor.context.select');
+    }
+
     $this->autorizarTurma($turma);
 
     if ($turma->isFinalizada()) {

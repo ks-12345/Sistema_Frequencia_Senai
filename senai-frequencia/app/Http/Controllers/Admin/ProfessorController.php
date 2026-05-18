@@ -28,12 +28,14 @@ class ProfessorController extends Controller
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users',
+            'cpf'      => 'nullable|string|max:14|unique:users,cpf',
             'password' => 'required|string|min:6',
         ]);
 
         User::create([
             'name'     => $request->name,
             'email'    => $request->email,
+            'cpf'      => $request->cpf,
             'password' => Hash::make($request->password),
             'role'     => 'professor',
         ]);
@@ -52,9 +54,10 @@ class ProfessorController extends Controller
         $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $professore->id,
+            'cpf'   => 'nullable|string|max:14|unique:users,cpf,' . $professore->id,
         ]);
 
-        $data = $request->only('name', 'email');
+        $data = $request->only('name', 'email', 'cpf');
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);

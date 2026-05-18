@@ -51,6 +51,10 @@
             </div>
             
             <div class="flex items-center gap-3">
+                <a href="{{ route('professor.context.select') }}" class="bg-white border border-slate-200 px-5 py-3 rounded-2xl text-slate-700 hover:bg-slate-50 transition shadow-sm font-bold flex items-center gap-2">
+                    <i class="ti ti-switch-horizontal"></i>
+                    Modo: {{ session('teacher_acting_mode') === 'substituto' ? 'Substituto' : 'Titular' }}
+                </a>
                 <a href="{{ route('professor.frequencia.pendentes') }}" class="relative bg-amber-50 text-amber-700 px-6 py-3 rounded-2xl font-bold text-sm hover:bg-amber-100 transition flex items-center gap-2 border border-amber-200">
                     <span class="flex h-2 w-2 relative">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>

@@ -20,10 +20,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('alunos',     \App\Http\Controllers\Admin\AlunoController::class);
     Route::resource('turmas',     \App\Http\Controllers\Admin\TurmaController::class);
     Route::resource('professores',\App\Http\Controllers\Admin\ProfessorController::class);
-    Route::get('substitutos', [\App\Http\Controllers\Admin\SubstitutoController::class, 'index'])->name('substitutos.index');
-Route::get('substitutos/criar', [\App\Http\Controllers\Admin\SubstitutoController::class, 'create'])->name('substitutos.create');
-Route::post('substitutos', [\App\Http\Controllers\Admin\SubstitutoController::class, 'store'])->name('substitutos.store');
-Route::delete('substitutos/{substituto}', [\App\Http\Controllers\Admin\SubstitutoController::class, 'destroy'])->name('substitutos.destroy');
+Route::get('substitutos', [\App\Http\Controllers\Admin\TeacherSubstitutionLogController::class, 'index'])->name('substitutos.index');
+Route::get('substitutos/exportar', [\App\Http\Controllers\Admin\TeacherSubstitutionLogController::class, 'export'])->name('substitutos.export');
 Route::get('relatorios', [\App\Http\Controllers\Admin\RelatorioController::class, 'index'])->name('relatorios.index');
 Route::get('relatorios/pdf', [\App\Http\Controllers\Admin\RelatorioController::class, 'exportarPdf'])->name('relatorios.pdf');
 Route::get('relatorios/csv', [\App\Http\Controllers\Admin\RelatorioController::class, 'exportarExcel'])->name('relatorios.csv');
@@ -61,6 +59,12 @@ Route::middleware(['auth', 'role:secretaria,admin'])->prefix('secretaria')->name
 
 // Rotas do Professor
 Route::middleware(['auth', 'role:professor'])->prefix('professor')->name('professor.')->group(function () {
+    Route::get('/atuacao', [\App\Http\Controllers\Professor\ActingContextController::class, 'select'])->name('context.select');
+    Route::post('/atuacao/titular', [\App\Http\Controllers\Professor\ActingContextController::class, 'titular'])->name('context.titular');
+    Route::get('/atuacao/substituto', [\App\Http\Controllers\Professor\ActingContextController::class, 'substituteForm'])->name('context.substitute.form');
+    Route::post('/atuacao/substituto', [\App\Http\Controllers\Professor\ActingContextController::class, 'substitute'])->name('context.substitute');
+    Route::post('/atuacao/substituto/encerrar', [\App\Http\Controllers\Professor\ActingContextController::class, 'finish'])->name('context.finish');
+    Route::middleware('teacher.context')->group(function () {
     Route::get('/dashboard', [ProfessorDashboard::class, 'index'])->name('dashboard');
     Route::get('/frequencia', [\App\Http\Controllers\Professor\FrequenciaController::class, 'index'])->name('frequencia.index');
     Route::get('/frequencia/{turma}/lancar', [\App\Http\Controllers\Professor\FrequenciaController::class, 'lancar'])->name('frequencia.lancar');
@@ -81,6 +85,7 @@ Route::post('/diario/{turma}', [\App\Http\Controllers\Professor\DiarioAulaContro
 Route::get('/diario/{turma}/{aula}/editar', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'edit'])->name('diario.edit');
 Route::put('/diario/{turma}/{aula}', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'update'])->name('diario.update');
 Route::delete('/diario/{turma}/{aula}', [\App\Http\Controllers\Professor\DiarioAulaController::class, 'destroy'])->name('diario.destroy');
+    });
 });
 
 // Rotas da Empresa

@@ -28,7 +28,7 @@ private function redirectByRole(): string
 {
     return match(Auth::user()->role) {
         'admin'      => route('admin.dashboard'),
-        'professor'  => route('professor.dashboard'),
+        'professor'  => route('professor.context.select'),
         'empresa'    => route('empresa.dashboard'),
         'aluno'      => route('aluno.dashboard'),
         'secretaria' => route('secretaria.saidas.index'),

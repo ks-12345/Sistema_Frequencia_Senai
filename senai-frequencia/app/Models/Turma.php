@@ -37,8 +37,13 @@ class Turma extends Model
         return $this->status === 'finalizada';
     }
 
-    public function diarioAulas()
+public function diarioAulas()
 {
     return $this->hasMany(DiarioAula::class);
 }
+
+    public function substitutionLogs()
+    {
+        return $this->hasMany(TeacherSubstitutionLog::class, 'class_id');
+    }
 }

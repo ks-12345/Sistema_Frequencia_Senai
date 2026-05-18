@@ -110,6 +110,16 @@
                     </div>
 
                     <div class="flex flex-col gap-2 md:col-span-2">
+                        <label class="text-sm font-bold text-slate-700 ml-1">CPF</label>
+                        <div class="relative">
+                            <i class="ti ti-id-badge absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" name="cpf" value="{{ old('cpf', $professore->cpf) }}"
+                                   placeholder="000.000.000-00"
+                                   class="input-focus w-full bg-slate-100 border-2 border-transparent rounded-2xl pl-12 pr-5 py-3.5 text-slate-800 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2 md:col-span-2">
                         <label class="text-sm font-bold text-slate-700 ml-1">Redefinir Senha</label>
                         <div class="relative">
                             <i class="ti ti-lock-password absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>

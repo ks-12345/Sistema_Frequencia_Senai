@@ -20,6 +20,7 @@ class User extends Authenticatable
         'empresa_id',
         'is_substituto',
         'acesso_expira_em',
+        'cpf',
     ];
 
     protected $hidden = [
@@ -77,5 +78,15 @@ class User extends Authenticatable
 {
     return $this->belongsToMany(Turma::class, 'professor_turma');
 }
+
+    public function substitutionLogs()
+    {
+        return $this->hasMany(TeacherSubstitutionLog::class, 'teacher_id');
+    }
+
+    public function substitutionsAsTitular()
+    {
+        return $this->hasMany(TeacherSubstitutionLog::class, 'substituted_teacher_id');
+    }
 
 }
