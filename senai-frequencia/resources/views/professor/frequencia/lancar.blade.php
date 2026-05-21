@@ -127,6 +127,33 @@
                             <td class="px-8 py-5">
                                 <input type="text" name="observacoes[{{ $aluno->id }}]" placeholder="Nota opcional..."
                                        class="w-full bg-slate-50 border border-transparent rounded-xl px-4 py-2 text-sm text-slate-600 placeholder:text-slate-300 outline-none focus:bg-white focus:border-slate-200 transition-all italic">
+                                <div class="atraso-fields mt-3 hidden rounded-2xl border border-amber-100 bg-amber-50/60 p-4" data-aluno="{{ $aluno->id }}">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-[10px] font-black uppercase tracking-widest text-amber-600 mb-1">Horario de entrada</label>
+                                            <input type="time" name="atraso_horario[{{ $aluno->id }}]"
+                                                   class="w-full rounded-xl border border-amber-100 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-amber-400">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-black uppercase tracking-widest text-amber-600 mb-1">Justificativa no momento</label>
+                                            <select name="atraso_apresentou_justificativa[{{ $aluno->id }}]"
+                                                    class="w-full rounded-xl border border-amber-100 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-amber-400">
+                                                <option value="0">Nao apresentou</option>
+                                                <option value="1">Apresentou</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <label class="block text-[10px] font-black uppercase tracking-widest text-amber-600 mb-1">Motivo informado pelo aluno</label>
+                                        <input type="text" name="atraso_motivo[{{ $aluno->id }}]" placeholder="Ex: transporte atrasado, consulta medica..."
+                                               class="w-full rounded-xl border border-amber-100 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-amber-400">
+                                    </div>
+                                    <div class="mt-3">
+                                        <label class="block text-[10px] font-black uppercase tracking-widest text-amber-600 mb-1">Observacao adicional</label>
+                                        <textarea name="atraso_observacoes[{{ $aluno->id }}]" rows="2"
+                                                  class="w-full rounded-xl border border-amber-100 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-amber-400"></textarea>
+                                    </div>
+                                </div>
                                 <div class="saida-fields mt-3 hidden rounded-2xl border border-blue-100 bg-blue-50/60 p-4" data-aluno="{{ $aluno->id }}">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         <div>
@@ -180,10 +207,16 @@
             const match = select.name.match(/\[(\d+)\]/);
             if (!match) return;
 
-            const fields = document.querySelector(`.saida-fields[data-aluno="${match[1]}"]`);
-            if (!fields) return;
+            const saidaFields = document.querySelector(`.saida-fields[data-aluno="${match[1]}"]`);
+            const atrasoFields = document.querySelector(`.atraso-fields[data-aluno="${match[1]}"]`);
 
-            fields.classList.toggle('hidden', select.value !== 'saida_antecipada');
+            if (saidaFields) {
+                saidaFields.classList.toggle('hidden', select.value !== 'saida_antecipada');
+            }
+
+            if (atrasoFields) {
+                atrasoFields.classList.toggle('hidden', select.value !== 'atraso');
+            }
         };
 
         select.addEventListener('change', toggleFields);

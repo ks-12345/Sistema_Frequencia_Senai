@@ -28,6 +28,14 @@ class RegistrarSaidaAntecipadaRequest extends FormRequest
             'saida_observacoes.*' => ['nullable', 'string', 'max:1000'],
             'saida_apresentou_justificativa' => ['nullable', 'array'],
             'saida_apresentou_justificativa.*' => ['nullable', 'boolean'],
+            'atraso_horario' => ['nullable', 'array'],
+            'atraso_horario.*' => ['nullable', 'date_format:H:i'],
+            'atraso_motivo' => ['nullable', 'array'],
+            'atraso_motivo.*' => ['nullable', 'string', 'max:1000'],
+            'atraso_observacoes' => ['nullable', 'array'],
+            'atraso_observacoes.*' => ['nullable', 'string', 'max:1000'],
+            'atraso_apresentou_justificativa' => ['nullable', 'array'],
+            'atraso_apresentou_justificativa.*' => ['nullable', 'boolean'],
         ];
     }
 
@@ -35,6 +43,7 @@ class RegistrarSaidaAntecipadaRequest extends FormRequest
     {
         return [
             'saida_horario.*.date_format' => 'Informe o horario de saida no formato correto.',
+            'atraso_horario.*.date_format' => 'Informe o horario de entrada no formato correto.',
         ];
     }
 }

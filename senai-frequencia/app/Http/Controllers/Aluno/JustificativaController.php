@@ -18,7 +18,7 @@ class JustificativaController extends Controller
 
         $status = request('status');
 
-        $solicitacoes = SolicitacaoSaida::with(['turma', 'professor', 'justificativas.analisadoPor'])
+        $solicitacoes = SolicitacaoSaida::with(['turma', 'professor', 'frequencia', 'justificativas.analisadoPor'])
             ->where('aluno_id', $aluno->id)
             ->when($status, fn ($query) => $query->where('status', $status))
             ->orderBy('data', 'desc')

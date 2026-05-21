@@ -72,4 +72,19 @@ class SolicitacaoSaida extends Model
     {
         return in_array($this->status, ['pendente', 'em_analise'], true);
     }
+
+    public function isAtraso(): bool
+    {
+        return $this->frequencia?->status_presenca === 'atraso';
+    }
+
+    public function getTipoOcorrenciaLabelAttribute(): string
+    {
+        return $this->isAtraso() ? 'Atraso' : 'Saida antecipada';
+    }
+
+    public function getHorarioOcorrenciaLabelAttribute(): string
+    {
+        return $this->isAtraso() ? 'Horario de entrada' : 'Horario de saida';
+    }
 }

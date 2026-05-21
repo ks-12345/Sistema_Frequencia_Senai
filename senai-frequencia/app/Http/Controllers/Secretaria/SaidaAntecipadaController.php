@@ -16,7 +16,7 @@ class SaidaAntecipadaController extends Controller
     {
         $status = $request->status;
 
-        $query = SolicitacaoSaida::with(['aluno.turma', 'professor', 'justificativas', 'analisadoPor'])
+        $query = SolicitacaoSaida::with(['aluno.turma', 'professor', 'frequencia', 'justificativas', 'analisadoPor'])
             ->when($status, fn ($q) => $q->where('status', $status))
             ->orderByRaw("FIELD(status, 'pendente', 'em_analise', 'recusado', 'falta_mantida', 'justificado', 'aprovado')")
             ->orderBy('created_at', 'desc');
@@ -37,21 +37,24 @@ class SaidaAntecipadaController extends Controller
     {
         $this->aprovarSolicitacao($saida, $request->observacao);
 
-        return back()->with('success', 'Justificativa aprovada, saida liberada e frequencia atualizada.');
+        return back()->with('success', 'Justificativa aprovada e frequencia atualizada.');
     }
 
     public function naoAutorizar(AnalisarJustificativaRequest $request, SolicitacaoSaida $saida)
     {
         $this->recusarSolicitacao($saida, $request->observacao);
 
-        return back()->with('success', 'Justificativa recusada e falta mantida.');
+        return back()->with('success', 'Justificativa recusada e frequencia mantida.');
     }
 
     private function aprovarSolicitacao(SolicitacaoSaida $saida, ?string $observacao): void
     {
+        $saida->loadMissing('frequencia');
+        $isAtraso = $saida->isAtraso();
+
         $saida->update([
             'status' => 'justificado',
-            'autorizado_saida' => true,
+            'autorizado_saida' => !$isAtraso,
             'analisado_por' => Auth::id(),
             'data_analise' => now(),
         ]);
@@ -65,8 +68,8 @@ class SaidaAntecipadaController extends Controller
         Frequencia::whereKey($saida->frequencia_id)
             ->orWhere(fn ($q) => $q->where('aluno_id', $saida->aluno_id)->whereDate('data', $saida->data))
             ->update([
-                'status_presenca' => 'saida_antecipada',
-                'observacao' => trim('Saida antecipada justificada. '.$observacao),
+                'status_presenca' => $isAtraso ? 'atraso' : 'saida_antecipada',
+                'observacao' => trim(($isAtraso ? 'Atraso justificado. ' : 'Saida antecipada justificada. ').$observacao),
             ]);
 
         HistoricoSolicitacaoSaida::create([
@@ -79,6 +82,9 @@ class SaidaAntecipadaController extends Controller
 
     private function recusarSolicitacao(SolicitacaoSaida $saida, ?string $observacao): void
     {
+        $saida->loadMissing('frequencia');
+        $isAtraso = $saida->isAtraso();
+
         $saida->update([
             'status' => 'falta_mantida',
             'autorizado_saida' => false,
@@ -95,8 +101,8 @@ class SaidaAntecipadaController extends Controller
         Frequencia::whereKey($saida->frequencia_id)
             ->orWhere(fn ($q) => $q->where('aluno_id', $saida->aluno_id)->whereDate('data', $saida->data))
             ->update([
-                'status_presenca' => 'falta',
-                'observacao' => trim('Saida antecipada recusada. '.$observacao),
+                'status_presenca' => $isAtraso ? 'atraso' : 'falta',
+                'observacao' => trim(($isAtraso ? 'Atraso recusado. ' : 'Saida antecipada recusada. ').$observacao),
             ]);
 
         HistoricoSolicitacaoSaida::create([

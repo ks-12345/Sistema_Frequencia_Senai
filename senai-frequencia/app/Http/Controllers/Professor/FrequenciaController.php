@@ -77,6 +77,12 @@ class FrequenciaController extends Controller
                     ->withErrors(['saida_antecipada' => 'Informe horario e motivo para todas as saidas antecipadas.']);
             }
 
+            if ($status === 'atraso' && (!$request->filled("atraso_horario.$alunoId") || !$request->filled("atraso_motivo.$alunoId"))) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['atraso' => 'Informe horario de entrada e motivo para todos os atrasos.']);
+            }
+
             $frequenciaExistente = Frequencia::where('aluno_id', $alunoId)
                 ->whereDate('data', $request->data)
                 ->first();
@@ -86,8 +92,26 @@ class FrequenciaController extends Controller
             }
 
             $statusFluxo = $enviar ? 'pendente_aprovacao' : 'rascunho';
+            $observacao = $request->observacoes[$alunoId] ?? null;
 
-            Frequencia::updateOrCreate(
+            if ($status === 'atraso') {
+                $detalhesAtraso = [
+                    'Horario de entrada: ' . $request->atraso_horario[$alunoId],
+                    'Justificativa no momento: ' . ((bool) ($request->atraso_apresentou_justificativa[$alunoId] ?? false) ? 'Apresentou' : 'Nao apresentou'),
+                    'Motivo informado pelo aluno: ' . $request->atraso_motivo[$alunoId],
+                ];
+
+                if (!empty($request->atraso_observacoes[$alunoId])) {
+                    $detalhesAtraso[] = 'Observacao adicional: ' . $request->atraso_observacoes[$alunoId];
+                }
+
+                $observacao = trim(implode(PHP_EOL, array_filter([
+                    $observacao,
+                    implode(PHP_EOL, $detalhesAtraso),
+                ])));
+            }
+
+            $frequencia = Frequencia::updateOrCreate(
                 [
                     'aluno_id' => $alunoId,
                     'data'     => $request->data,
@@ -98,11 +122,13 @@ class FrequenciaController extends Controller
                     'status'               => $statusFluxo,
                     'status_aprovacao'     => 'pendente',
                     'enviado_secretaria_em' => $enviar ? now() : null,
-                    'observacao'           => $request->observacoes[$alunoId] ?? null,
+                    'observacao'           => $observacao,
                 ]
             );
 
-            if ($status === 'saida_antecipada') {
+            if (in_array($status, ['saida_antecipada', 'atraso'], true)) {
+                $isAtraso = $status === 'atraso';
+
                 $solicitacao = SolicitacaoSaida::updateOrCreate(
                     [
                         'aluno_id' => $alunoId,
@@ -111,13 +137,15 @@ class FrequenciaController extends Controller
                     [
                         'professor_id' => $user->id,
                         'turma_id' => $turma->id,
-                        'frequencia_id' => Frequencia::where('aluno_id', $alunoId)
-                            ->whereDate('data', $request->data)
-                            ->value('id'),
-                        'horario_saida' => $request->saida_horario[$alunoId],
-                        'motivo' => $request->saida_motivo[$alunoId],
-                        'observacoes' => $request->saida_observacoes[$alunoId] ?? null,
-                        'apresentou_justificativa' => (bool) ($request->saida_apresentou_justificativa[$alunoId] ?? false),
+                        'frequencia_id' => $frequencia->id,
+                        'horario_saida' => $isAtraso ? $request->atraso_horario[$alunoId] : $request->saida_horario[$alunoId],
+                        'motivo' => $isAtraso ? $request->atraso_motivo[$alunoId] : $request->saida_motivo[$alunoId],
+                        'observacoes' => $isAtraso
+                            ? ($request->atraso_observacoes[$alunoId] ?? 'Ocorrencia de atraso registrada durante a chamada.')
+                            : ($request->saida_observacoes[$alunoId] ?? null),
+                        'apresentou_justificativa' => $isAtraso
+                            ? (bool) ($request->atraso_apresentou_justificativa[$alunoId] ?? false)
+                            : (bool) ($request->saida_apresentou_justificativa[$alunoId] ?? false),
                         'autorizado_saida' => false,
                         'status' => 'pendente',
                         'analisado_por' => null,
@@ -129,7 +157,9 @@ class FrequenciaController extends Controller
                     'solicitacao_saida_id' => $solicitacao->id,
                     'user_id' => $user->id,
                     'acao' => 'solicitacao_criada',
-                    'descricao' => 'Professor registrou saida antecipada durante a chamada.',
+                    'descricao' => $isAtraso
+                        ? 'Professor registrou atraso durante a chamada.'
+                        : 'Professor registrou saida antecipada durante a chamada.',
                 ]);
             }
         }

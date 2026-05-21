@@ -84,6 +84,7 @@
                 @php
                     $isAberta = in_array($saida->status, ['pendente', 'em_analise'], true);
                     $menor = $saida->aluno?->isMenorDeIdade();
+                    $isAtraso = $saida->isAtraso();
                 @endphp
                 <section class="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
                     <div class="flex items-start justify-between gap-4 mb-5">
@@ -91,6 +92,9 @@
                             <h2 class="text-2xl font-black text-[#0a1128]">{{ $saida->aluno->nome }}</h2>
                             <p class="text-xs text-blue-600 font-black uppercase tracking-widest">{{ $saida->turma->nome ?? 'Sem turma' }}</p>
                         </div>
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $isAtraso ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-blue-50 text-blue-700 border-blue-100' }}">
+                            {{ $saida->tipo_ocorrencia_label }}
+                        </span>
                         <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border {{ $isAberta ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-slate-50 text-slate-600 border-slate-100' }}">
                             {{ str_replace('_', ' ', $saida->status) }}
                         </span>
@@ -98,7 +102,7 @@
 
                     <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
                         <div class="rounded-2xl bg-slate-50 p-4">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Data/Hora</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $saida->horario_ocorrencia_label }}</p>
                             <p class="font-bold text-slate-700">{{ $saida->data->format('d/m/Y') }} {{ substr($saida->horario_saida, 0, 5) }}</p>
                         </div>
                         <div class="rounded-2xl bg-slate-50 p-4">
@@ -107,6 +111,7 @@
                         </div>
                     </div>
 
+                    <p class="text-sm text-slate-600 mb-2"><strong>Ocorrencia:</strong> {{ $saida->tipo_ocorrencia_label }}</p>
                     <p class="text-sm text-slate-600 mb-2"><strong>Motivo:</strong> {{ $saida->motivo }}</p>
                     <p class="text-sm text-slate-500 mb-5"><strong>Observacao:</strong> {{ $saida->observacoes ?? '---' }}</p>
 

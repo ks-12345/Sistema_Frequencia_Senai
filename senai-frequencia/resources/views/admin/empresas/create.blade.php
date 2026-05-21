@@ -102,6 +102,8 @@
                             <i class="ti ti-numbers absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
                             <input type="text" name="cnpj" value="{{ old('cnpj') }}" required
                                    placeholder="00.000.000/0000-00"
+                                   maxlength="18"
+                                   data-mask="cnpj"
                                    class="input-focus w-full bg-slate-100 border-2 border-transparent rounded-2xl pl-12 pr-5 py-3.5 font-mono text-slate-800 outline-none transition-all">
                         </div>
                     </div>

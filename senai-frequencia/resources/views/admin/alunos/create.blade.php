@@ -134,6 +134,8 @@
                         <label class="text-sm font-bold text-slate-700 ml-1">CPF *</label>
                         <input type="text" name="cpf" value="{{ old('cpf') }}" required
                                placeholder="000.000.000-00"
+                               maxlength="14"
+                               data-mask="cpf"
                                class="input-focus bg-slate-100 border-2 border-transparent rounded-2xl px-5 py-3.5 font-mono text-slate-800 outline-none transition-all">
                     </div>
 

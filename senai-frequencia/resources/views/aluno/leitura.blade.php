@@ -38,7 +38,6 @@
             <label for="tipo">Tipo de registro</label>
             <select id="tipo" name="tipo" required>
                 <option value="entrada_portaria">Entrada Portaria</option>
-                <option value="entrada_bloco">Entrada Bloco</option>
                 <option value="saida">Saida</option>
             </select>
 

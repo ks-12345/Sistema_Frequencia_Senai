@@ -54,22 +54,33 @@ class QrCodeController extends Controller
         if ($request->tipo === 'saida') {
             $solicitacao = SolicitacaoSaida::where('aluno_id', $aluno->id)
                 ->whereDate('data', today())
+                ->where(function ($query) {
+                    $query->whereDoesntHave('frequencia')
+                        ->orWhereHas('frequencia', fn ($frequencia) => $frequencia->where('status_presenca', 'saida_antecipada'));
+                })
                 ->latest()
                 ->first();
 
-            $saidaAutorizada = $solicitacao?->autorizado_saida === true;
-            $deveBloquear = ($solicitacao && !$saidaAutorizada) || ($aluno->isMenorDeIdade() && !$saidaAutorizada);
+            $motivoBloqueio = null;
 
-            if ($deveBloquear) {
+            if ($aluno->isMenorDeIdade()) {
+                $motivoBloqueio = 'Saida nao permitida para aluno menor de idade sem procedimento presencial da secretaria.';
+            } elseif (!$solicitacao) {
+                $motivoBloqueio = 'Saida nao permitida. Nao existe autorizacao registrada para hoje.';
+            } elseif ($solicitacao->autorizado_saida !== true) {
+                $motivoBloqueio = 'Saida nao permitida. A autorizacao da secretaria ainda esta pendente ou foi recusada.';
+            }
+
+            if ($motivoBloqueio) {
                 TentativaSaida::create([
                     'aluno_id' => $aluno->id,
                     'data_hora' => now(),
                     'resultado' => 'bloqueado',
-                    'motivo_bloqueio' => 'Saida nao autorizada. Necessaria autorizacao da secretaria.',
+                    'motivo_bloqueio' => $motivoBloqueio,
                 ]);
 
                 return back()->withErrors([
-                    'saida' => 'Saída não autorizada. Necessária autorização da secretaria.',
+                    'saida' => $motivoBloqueio,
                 ])->withInput();
             }
 

@@ -25,7 +25,7 @@
             <div>
                 <p class="text-blue-600 font-black text-[10px] uppercase tracking-[0.3em] mb-2">Area do Aluno</p>
                 <h1 class="text-3xl font-black text-[#0a1128] tracking-tight">Justificativas e Atestados</h1>
-                <p class="text-slate-500 text-sm mt-2">Envie documentos e acompanhe a analise das suas saidas antecipadas.</p>
+                <p class="text-slate-500 text-sm mt-2">Envie documentos e acompanhe a analise das suas saidas antecipadas e atrasos.</p>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl px-5 py-4 shadow-sm">
                 <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Pendencias</p>
@@ -56,6 +56,7 @@
         <div class="space-y-5">
             @forelse($solicitacoes as $solicitacao)
                 @php
+                    $isAtraso = $solicitacao->isAtraso();
                     $statusClasses = [
                         'pendente' => 'bg-amber-50 text-amber-700 border-amber-100',
                         'em_analise' => 'bg-blue-50 text-blue-700 border-blue-100',
@@ -69,11 +70,13 @@
                     <div class="p-6 lg:p-8 grid lg:grid-cols-[1fr_360px] gap-8">
                         <div>
                             <div class="flex flex-wrap items-center gap-3 mb-4">
+                                <span class="px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest {{ $isAtraso ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-blue-50 text-blue-700 border-blue-100' }}">{{ $solicitacao->tipo_ocorrencia_label }}</span>
                                 <span class="px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest {{ $statusClasses }}">{{ str_replace('_', ' ', $solicitacao->status) }}</span>
                                 <span class="text-xs font-bold text-slate-400">{{ $solicitacao->data->format('d/m/Y') }} as {{ substr($solicitacao->horario_saida, 0, 5) }}</span>
                             </div>
                             <h2 class="text-xl font-black text-[#0a1128]">{{ $solicitacao->turma->nome ?? 'Turma nao informada' }}</h2>
                             <p class="text-sm text-slate-500 mt-2"><strong>Motivo:</strong> {{ $solicitacao->motivo }}</p>
+                            <p class="text-sm text-slate-500 mt-1"><strong>{{ $solicitacao->horario_ocorrencia_label }}:</strong> {{ substr($solicitacao->horario_saida, 0, 5) }}</p>
                             <p class="text-sm text-slate-500 mt-1"><strong>Professor:</strong> {{ $solicitacao->professor->name ?? '---' }}</p>
 
                             <div class="mt-5 border-t border-slate-100 pt-5">
